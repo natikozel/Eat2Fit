@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "429048874115",
+    "project_id": "eat2fit-3da60",
+    "storage_bucket": "eat2fit-3da60.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:429048874115:android:02d75ce72783c3acaa07b6",
+        "android_client_info": {
+          "package_name": "com.example.finalproj"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAU1yLlHqo-SdRII4ykmgYW_VZ7QoNEuZ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

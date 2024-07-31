@@ -1,0 +1,31 @@
+<resources>
+
+    <string name="app_name">Eat2Fit</string>
+    <string name="fileprovider">com.jerry.jetpack_take_select_photo_image.components.fileprovider</string>
+
+    <!-- Home Tabs -->
+    <string name="home_feed">Home</string>
+    <string name="home_search">Search</string>
+    <string name="home_scanner">Scanner</string>
+    <string name="home_meals">Meals</string>
+    <string name="home_profile">Profile</string>
+
+
+    <!-- Landing routes -->
+    <string name="landing_signup">Sign up</string>
+    <string name="landing_forgot_password">Forgot password</string>
+    <string name="landing_main">Landing Main</string>
+
+    <!-- Authentication -->
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+
+    <!-- Routes -->
+    <string name="home_route">Home</string>
+    <string name="landing_route">Landing</string>
+    <string name="profile_route">Profile</string>
+    <string name="profile_edit_route">Profile/Edit</string>
+    <string name="search_route">Search</string>
+    <string name="meals_route">Meals</string>
+
+</resources>
