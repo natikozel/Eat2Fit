@@ -13,28 +13,39 @@ import com.example.finalproj.R
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.finalproj.components.MyModalBottomSheet
 import java.io.File
 
 @Composable
 fun MyImageArea(
-    uri: Uri? = null, //target url to preview
+    modifier: Modifier = Modifier,
+    uri: String? = null, // target url to preview
     directory: File? = null, // stored directory
-    onSetUri : (Uri) -> Unit = {}, // selected / taken uri
+    onSetUri: (Uri) -> Unit = {}, // selected / taken uri
+    onRemoveUri: () -> Unit = {}, // remove selected uri
+    contentDescription: String?,
+    contentScale: ContentScale = ContentScale.Crop,
 ) {
     val context = LocalContext.current
     val tempUri = remember { mutableStateOf<Uri?>(null) }
@@ -50,11 +61,16 @@ fun MyImageArea(
                 it
             )
 
-            return FileProvider.getUriForFile(
-                context,
-                authority,
-                file
-            )
+            return try {
+                FileProvider.getUriForFile(
+                    context,
+                    authority,
+                    file
+                )
+            } catch (e: IllegalArgumentException) {
+                e.printStackTrace()
+                null
+            }
         }
         return null
     }
@@ -70,7 +86,7 @@ fun MyImageArea(
 
     val takePhotoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
-        onResult = {isSaved ->
+        onResult = { isSaved ->
             tempUri.value?.let {
                 onSetUri.invoke(it)
             }
@@ -91,7 +107,7 @@ fun MyImageArea(
     }
 
     var showBottomSheet by remember { mutableStateOf(false) }
-    if (showBottomSheet){
+    if (showBottomSheet) {
         MyModalBottomSheet(
             onDismiss = {
                 showBottomSheet = false
@@ -100,7 +116,10 @@ fun MyImageArea(
                 showBottomSheet = false
 
                 val permission = Manifest.permission.CAMERA
-                if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        permission
+                    ) == PackageManager.PERMISSION_GRANTED
                 ) {
                     // Permission is already granted, proceed to step 2
                     val tmpUri = getTempUri()
@@ -119,39 +138,27 @@ fun MyImageArea(
                     )
                 )
             },
+            onRemoveImageClick = {
+                showBottomSheet = false
+                onRemoveUri()
+            },
         )
     }
 
-    Column (
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    AsyncImage(
+        model = uri ?: ImageRequest.Builder(LocalContext.current)
+            .data(R.drawable.default_profile_pic) // Default image
+            .crossfade(true)
+            .build(),
+        contentDescription = contentDescription,
+        modifier = modifier
+            .fillMaxSize()
+            .clip(CircleShape)
+            .clickable {
+                showBottomSheet = true
+            },
+        contentScale = contentScale,
 
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Button(
-                onClick = {
-                    showBottomSheet = true
-                }
-            ) {
-                Text(text = "Select / Take")
-            }
-        }
+        )
 
-        //preview selfie
-        uri?.let {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                AsyncImage(
-                    model = it,
-                    contentDescription = null,
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-    }
 }

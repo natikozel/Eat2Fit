@@ -14,18 +14,19 @@ enum class Gender {
 }
 
 data class User(
-    var email: String? = null,
-    var password: String? = null,
     var fullName: String? = null,
     var gender: Gender? = null,
     var age: Int? = null,
     var goal: Goal? = null,
     var height: Double? = null,
     var weight: Double? = null,
+    var maxCalories: Int? = null,
     var previousWeights: List<Double>? = null,
-    var meals: List<Meal>? = null, // List of meals eaten by the user
-    var hasLoggedInOnce: Boolean?= false,
-//    var imageUrl: String? = null // New property for image URL
+    var previousMeals: HashMap<String, Meal> = HashMap(),
+    var hasLoggedInOnce: Boolean? = false,
+    var imageUrl: String? = null,
+    var recentMeal: Meal? = null,
+    var suggestedMeals: List<Meal>? = null,
 
 
 ) {

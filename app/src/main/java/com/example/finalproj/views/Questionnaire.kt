@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -34,14 +35,21 @@ import androidx.compose.ui.unit.sp
 import com.example.finalproj.R
 import com.example.finalproj.components.Eat2FitButton
 import com.example.finalproj.components.Eat2FitSurface
-import com.example.finalproj.components.NavigateBack
+import com.example.finalproj.components.NavigateBackArrow
 import com.example.finalproj.database.AuthenticationManager
+import com.example.finalproj.database.DatabaseKeys
 import com.example.finalproj.database.DatabaseManager
+import com.example.finalproj.database.SearchAPI
 import com.example.finalproj.database.models.Gender
 import com.example.finalproj.database.models.Goal
+import com.example.finalproj.database.models.ImageType
+import com.example.finalproj.database.models.Meal
 import com.example.finalproj.database.models.User
 import com.example.finalproj.util.Destinations
+import com.example.finalproj.util.dailyCaloriesConsumption
 import com.example.finalproj.util.validation.TextState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Locale
 
@@ -53,9 +61,10 @@ private fun Context.doSubmit(
     height: String,
     weight: String,
     date: LocalDate,
+    coroutineScope: CoroutineScope
 ) {
     AuthenticationManager.getCurrentUser()?.let { user ->
-        DatabaseManager.readUser(user.uid).addOnSuccessListener { dataSnapshot ->
+        DatabaseManager.readUser().addOnSuccessListener { dataSnapshot ->
             val returnedUser = dataSnapshot.getValue(User::class.java)
             returnedUser?.gender =
                 Gender.entries.first { it.name == gender.uppercase(Locale.getDefault()) }
@@ -64,9 +73,18 @@ private fun Context.doSubmit(
             returnedUser?.height = height.toDouble()
             returnedUser?.weight = weight.toDouble()
             returnedUser?.age = LocalDate.now().year - date.year
+            returnedUser?.maxCalories = dailyCaloriesConsumption(
+                returnedUser?.weight!!,
+                returnedUser?.height!!,
+                returnedUser?.age!!,
+                returnedUser?.gender!!
+            ).toInt()
             returnedUser?.hasLoggedInOnce = true
             if (returnedUser != null) {
                 DatabaseManager.updateUser(returnedUser)
+//                coroutineScope.launch {
+//                    SearchAPI.findSuggestedMeals()
+//                }
                 onNavigateToRoute(Destinations.PROFILE)
             }
         }
@@ -81,6 +99,7 @@ fun Questionnaire(
     elevation: Dp = 0.dp
 ) {
 
+    val coroutineScope = rememberCoroutineScope()
 
     val context = LocalContext.current
     val genderState = remember {
@@ -111,7 +130,7 @@ fun Questionnaire(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterVertically)
         ) {
-            NavigateBack(popBack)
+            NavigateBackArrow(popBack)
             Column {
                 Image(
                     modifier = Modifier
@@ -200,7 +219,8 @@ fun Questionnaire(
                                 goalState.text,
                                 heightState.text,
                                 weightState.text,
-                                pickedDate.value
+                                pickedDate.value,
+                                coroutineScope
                             )
                     }) {
                     Column(

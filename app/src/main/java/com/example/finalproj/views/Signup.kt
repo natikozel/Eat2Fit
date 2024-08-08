@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -22,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -29,14 +31,12 @@ import androidx.compose.ui.unit.sp
 import com.example.finalproj.components.Eat2FitButton
 import com.example.finalproj.components.Email
 import com.example.finalproj.components.GenericText
-import com.example.finalproj.components.HeadingTextComponent
-import com.example.finalproj.components.NavigateBack
-import com.example.finalproj.components.PadAllExceptBottom
+import com.example.finalproj.components.NavigateBackArrow
 import com.example.finalproj.components.Password
 import com.example.finalproj.database.AuthenticationManager
-import com.example.finalproj.database.DatabaseKeys
 import com.example.finalproj.database.DatabaseManager
 import com.example.finalproj.database.models.User
+import com.example.finalproj.ui.theme.Primary
 import com.example.finalproj.util.validation.ConfirmPasswordState
 import com.example.finalproj.util.validation.EmailState
 import com.example.finalproj.util.validation.PasswordState
@@ -86,11 +86,11 @@ fun Signup(popBack: () -> Boolean) {
         ) {
 
             Row(Modifier.padding(start = 30.dp)) {
-                NavigateBack(popBack)
+                NavigateBackArrow(popBack)
             }
 
             Column(
-                PadAllExceptBottom(20),
+                Modifier.padding(top = 20.dp, start = 20.dp, end = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(
                     16.dp,
                     alignment = Alignment.CenterVertically
@@ -99,7 +99,14 @@ fun Signup(popBack: () -> Boolean) {
             ) {
 
                 Spacer(modifier = Modifier.height(10.dp))
-                HeadingTextComponent(heading = "Sign up")
+
+                Text(
+                    text = "Sign up",
+                    modifier = Modifier.fillMaxWidth(),
+                    fontSize = 39.sp,
+                    color = Primary,
+                    fontWeight = FontWeight.Bold
+                )
 
                 Email(
                     emailState = emailState,

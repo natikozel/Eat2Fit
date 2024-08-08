@@ -1,7 +1,6 @@
 package com.example.finalproj.components
 
 import androidx.annotation.FloatRange
-import androidx.annotation.StringRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
@@ -13,15 +12,10 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
@@ -47,10 +40,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.core.os.ConfigurationCompat
-import com.example.finalproj.R
 import com.example.finalproj.ui.theme.Eat2FitTheme
-import com.example.finalproj.util.icons.rememberBarcodeScanner
-import com.example.finalproj.util.icons.rememberFastfood
 import com.example.finalproj.views.AppSections
 import java.util.Locale
 
@@ -71,16 +61,16 @@ fun BottomNavigationMenu(
         contentColor = contentColor
     ) {
         val springSpec = SpringSpec<Float>(
-            // Determined experimentally
             stiffness = 800f,
             dampingRatio = 0.8f
         )
         Eat2FitBottomNavLayout(
             selectedIndex = currentSection.ordinal,
             itemCount = routes.size,
-            indicator = { JetsnackBottomNavIndicator() },
+            indicator = { Eat2FitBottomNavIndicator() },
             animSpec = springSpec,
-            modifier = Modifier.navigationBarsPadding()
+            modifier = Modifier.padding(bottom = 30.dp)
+//            modifier = Modifier.navigationBarsPadding()
         ) {
             val configuration = LocalConfiguration.current
             val currentLocale: Locale =
@@ -214,7 +204,7 @@ fun Eat2FitBottomNavigationItem(
 ) {
     // Animate the icon/text positions within the item based on selection
     val animationProgress by animateFloatAsState(if (selected) 1f else 0f, animSpec)
-    JetsnackBottomNavItemLayout(
+    Eat2FitBottomNavItemLayout(
         icon = icon,
         text = text,
         animationProgress = animationProgress,
@@ -226,7 +216,7 @@ fun Eat2FitBottomNavigationItem(
 
 
 @Composable
-private fun JetsnackBottomNavItemLayout(
+private fun Eat2FitBottomNavItemLayout(
     icon: @Composable BoxScope.() -> Unit,
     text: @Composable BoxScope.() -> Unit,
     @FloatRange(from = 0.0, to = 1.0) animationProgress: Float,
@@ -292,7 +282,7 @@ private fun MeasureScope.placeTextAndIcon(
 }
 
 @Composable
-private fun JetsnackBottomNavIndicator(
+private fun Eat2FitBottomNavIndicator(
     strokeWidth: Dp = 2.dp,
     color: Color = Eat2FitTheme.colors.iconInteractive,
     shape: Shape = BottomNavIndicatorShape

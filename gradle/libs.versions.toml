@@ -7,8 +7,8 @@ coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.3"
-activityCompose = "1.9.0"
+lifecycleRuntimeKtx = "2.8.4"
+activityCompose = "1.9.1"
 composeBom = "2024.06.00"
 exoPlayer = "2.19.1"
 ui = "1.6.8"
@@ -16,6 +16,13 @@ navigationCompose = "2.7.7"
 coil = "2.6.0"
 firebaseDatabaseKtx = "21.0.0"
 firebaseStorageKtx = "21.0.0"
+androidx-constraintlayout = "1.0.1"
+code-scanner = "16.1.0"
+gpsCoroutines = "1.8.1"
+lifecycleRuntimeComposeAndroid = "2.8.4"
+gson = "2.11.0"
+firebaseFirestoreKtx = "25.0.0"
+coreKtxVersion = "1.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -23,6 +30,8 @@ datetime = { module = "io.github.vanpra.compose-material-dialogs:datetime", vers
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+google-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -36,6 +45,7 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 androidx-material3-navigation = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite" }
 androidx-media3-exoplayer = { group = "com.google.android.exoplayer", name = "exoplayer", version.ref = "exoPlayer" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
@@ -44,6 +54,12 @@ androidx-compose-foundation-layout = { module = "androidx.compose.foundation:fou
 coil-kt-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
+androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "androidx-constraintlayout" }
+codescanner = {module = "com.google.android.gms:play-services-code-scanner", version.ref = "code-scanner"}
+gpsCoroutines = {module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "gpsCoroutines"}
+androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "lifecycleRuntimeComposeAndroid" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtxVersion" }
 
 
 [plugins]

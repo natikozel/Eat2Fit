@@ -1,17 +1,27 @@
 package com.example.finalproj.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,12 +35,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 
 @Composable
 fun MyModalBottomSheet(
     onDismiss: () -> Unit,
     onTakePhotoClick: () -> Unit,
-    onPhotoGalleryClick: () -> Unit
+    onPhotoGalleryClick: () -> Unit,
+    onRemoveImageClick: () -> Unit,
 ) {
     MyModalBottomSheetContent(
         header = "Choose Option",
@@ -38,18 +50,25 @@ fun MyModalBottomSheet(
             onDismiss.invoke()
         },
         items = listOf(
+//            BottomSheetItem(
+//                title = "Take Photo",
+//                icon = Icons.Default.AccountBox,
+//                onClick = {
+//                    onTakePhotoClick.invoke()
+//                }
+//            ),
             BottomSheetItem(
-                title = "Take Photo",
-                icon = Icons.Default.AccountBox,
-                onClick = {
-                    onTakePhotoClick.invoke()
-                }
-            ),
-            BottomSheetItem(
-                title = "select image",
+                title = "Select image",
                 icon = Icons.Default.Place,
                 onClick = {
                     onPhotoGalleryClick.invoke()
+                }
+            ),
+            BottomSheetItem(
+                title = "Remove current image",
+                icon = Icons.Default.Delete,
+                onClick = {
+                    onRemoveImageClick.invoke()
                 }
             ),
         )
@@ -60,16 +79,12 @@ fun MyModalBottomSheet(
 @Composable
 fun MyModalBottomSheetContent(
     onDismiss: () -> Unit,
-    //header
     header: String = "Choose Option",
-
     items: List<BottomSheetItem> = listOf(),
 ) {
     val skipPartiallyExpanded by remember { mutableStateOf(false) }
-    val bottomSheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = skipPartiallyExpanded
-    )
-    val edgeToEdgeEnabled by remember { mutableStateOf(false) }
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipPartiallyExpanded)
+    val edgeToEdgeEnabled by remember { mutableStateOf(true) }
     val windowInsets = if (edgeToEdgeEnabled)
         WindowInsets(0) else BottomSheetDefaults.windowInsets
 
@@ -83,8 +98,8 @@ fun MyModalBottomSheetContent(
         windowInsets = windowInsets
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.navigationBarsPadding(),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp),
@@ -93,7 +108,7 @@ fun MyModalBottomSheetContent(
                 textAlign = TextAlign.Center
             )
             items.forEach {item ->
-                androidx.compose.material3.ListItem(
+                ListItem(
                     modifier = Modifier.clickable {
                         item.onClick.invoke()
                     },

@@ -1,3 +1,4 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -14,11 +15,11 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+
     }
 
     buildTypes {
@@ -30,6 +31,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -67,10 +69,19 @@ dependencies {
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.datetime)
     implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
+    implementation(libs.google.firebase.analytics)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.database.ktx)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.storage.ktx)
+    implementation(libs.androidx.constraintlayout.compose)
+    implementation(libs.codescanner)
+    implementation(libs.gpsCoroutines)
+    implementation(libs.androidx.lifecycle.runtime.compose.android)
+    implementation(libs.gson)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.core.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

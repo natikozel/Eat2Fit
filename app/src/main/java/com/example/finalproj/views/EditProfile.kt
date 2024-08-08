@@ -6,11 +6,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -21,34 +19,39 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.example.finalproj.R
 import com.example.finalproj.components.Eat2FitButton
 import com.example.finalproj.components.Eat2FitSurface
-import com.example.finalproj.components.NavigateBack
+import com.example.finalproj.components.NavigateBackArrow
 import com.example.finalproj.database.AuthenticationManager
 import com.example.finalproj.database.DatabaseKeys
 import com.example.finalproj.database.DatabaseManager
+import com.example.finalproj.database.SearchAPI
+import com.example.finalproj.database.models.Gender
 import com.example.finalproj.database.models.Goal
 import com.example.finalproj.database.models.User
+import com.example.finalproj.util.Destinations
+import com.example.finalproj.util.dailyCaloriesConsumption
 import com.example.finalproj.util.validation.TextState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import okhttp3.internal.notifyAll
+import okhttp3.internal.wait
 import java.time.LocalDate
 import java.util.Locale
 
@@ -58,6 +61,8 @@ fun EditProfile(
     modifier: Modifier = Modifier,
     elevation: Dp = 0.dp
 ) {
+
+    val coroutineScope = rememberCoroutineScope()
 
     val goalState = remember {
         TextState(input = "Your Goal")
@@ -74,24 +79,22 @@ fun EditProfile(
     val context = LocalContext.current
     var user by remember { mutableStateOf<User?>(null) }
     var isLoading by remember { mutableStateOf(true) }
-    val userId = AuthenticationManager.getCurrentUser()?.uid
 
-    LaunchedEffect(userId) {
-        userId?.let {
-            DatabaseManager.readUser(userId).addOnSuccessListener { dataSnapshot ->
-                user = dataSnapshot.getValue(User::class.java)
-                goalState.text = "${
-                    user?.goal.toString().lowercase(Locale.ROOT).replaceFirstChar { it.uppercase() }
-                } Weight"
-                heightState.text = user?.height.toString()
-                weightState.text = user?.weight.toString()
+    LaunchedEffect(Unit) {
+        DatabaseManager.readUser().addOnSuccessListener { dataSnapshot ->
+            user = dataSnapshot.getValue(User::class.java)
+            goalState.text = "${
+                user?.goal.toString().lowercase(Locale.ROOT).replaceFirstChar { it.uppercase() }
+            } Weight"
+            heightState.text = user?.height.toString()
+            weightState.text = user?.weight.toString()
+            isLoading = false
+        }
+            .addOnFailureListener { exception ->
+                // Handle error
                 isLoading = false
             }
-                .addOnFailureListener { exception ->
-                    // Handle error
-                    isLoading = false
-                }
-        }
+
     }
 
     if (isLoading) {
@@ -120,7 +123,7 @@ fun EditProfile(
                         alignment = Alignment.CenterVertically
                     )
                 ) {
-                    NavigateBack(popBack)
+                    NavigateBackArrow(popBack)
 
                     Column(
 //                modifier = Modifier.fillMaxSize(),
@@ -167,7 +170,9 @@ fun EditProfile(
                                     heightState.text,
                                     weightState.text,
                                     user?.weight!!,
-                                    user?.previousWeights!!
+                                    user?.previousWeights!!,
+                                    coroutineScope
+
                                 )
                             }) {
                             Column(
@@ -204,17 +209,27 @@ private fun Context.doEdit(
     newHeight: String,
     newWeight: String,
     oldWeight: Double,
-    previousWeight: List<Double>
+    previousWeightList: List<Double>,
+    coroutineScope: CoroutineScope
 ) {
 
-    val newWeightList = previousWeight.toMutableList()
+    val newWeightList = previousWeightList.toMutableList()
     newWeightList.add(oldWeight)
-
-    DatabaseManager.updateUserKey(
-        DatabaseKeys.GOAL,
-        Goal.entries.first { newGoal.uppercase(Locale.getDefault()).contains(it.name) })
-    DatabaseManager.updateUserKey(DatabaseKeys.HEIGHT, newHeight.toDouble())
-    DatabaseManager.updateUserKey(DatabaseKeys.WEIGHT, newWeight.toDouble())
-    DatabaseManager.updateUserKey(DatabaseKeys.PREVIOUS_WEIGHTS, newWeightList.toList())
-    popBack();
+    DatabaseManager.readUser().addOnSuccessListener { dataSnapshot ->
+        val returnedUser = dataSnapshot.getValue(User::class.java)
+        returnedUser?.goal =
+            Goal.entries.first { newGoal.uppercase(Locale.getDefault()).contains(it.name) }
+        returnedUser?.height = newHeight.toDouble()
+        returnedUser?.weight = newWeight.toDouble()
+        returnedUser?.maxCalories = dailyCaloriesConsumption(
+            returnedUser?.weight!!,
+            returnedUser?.height!!,
+            returnedUser?.age!!,
+            returnedUser.gender!!
+        ).toInt()
+        returnedUser.previousWeights = newWeightList.toList()
+        AuthenticationManager.setUser(returnedUser)
+        DatabaseManager.updateUser(returnedUser)
+        popBack();
+    }
 }

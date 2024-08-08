@@ -1,5 +1,6 @@
 package com.example.finalproj.views
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -12,9 +13,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import com.example.finalproj.util.Destinations.BARCODE_KEY
+import com.example.finalproj.util.Destinations.INFO_PAGE_KEY
+import com.example.finalproj.util.Destinations.IS_CORRECT_KEY
 import com.example.finalproj.util.Destinations.LANDING
 import com.example.finalproj.util.Destinations.PROFILE
+import com.example.finalproj.util.Destinations.RECIPE_URI_KEY
 import com.example.finalproj.util.Destinations.WELCOME
+import com.example.finalproj.util.InformationPageManager
 import com.example.finalproj.util.rememberEat2FitNavController
 
 
@@ -27,10 +33,9 @@ fun Navigation() {
         startDestination = LANDING
     ) {
         eat2FitNavGraph(
-            popBack = { eat2FitNavController.navController.popBackStack() },
-//            onMealSelected = eat2FitNavController::navigateToMealDetail,
-            upPress = eat2FitNavController::upPress,
-            onNavigateToRoute = eat2FitNavController::navigateToBottomBarRoute
+            popBack = eat2FitNavController::popBack,
+            onNavigateToRoute = eat2FitNavController::navigate,
+            navigateAndClear = eat2FitNavController::navigateAndClearStack,
         )
     }
 }
@@ -38,73 +43,78 @@ fun Navigation() {
 
 private fun NavGraphBuilder.eat2FitNavGraph(
     popBack: () -> Boolean,
-//    onMealSelected: (Long, NavBackStackEntry) -> Unit,
-    upPress: () -> Unit,
-    onNavigateToRoute: (String) -> Unit
+    onNavigateToRoute: (String) -> Unit,
+    navigateAndClear: (String) -> Unit
 ) {
 
     navigation(
         route = LANDING,
-        startDestination = LandingSections.LANDING.route
+        startDestination = LandingSections.MAIN.route // landing
     ) {
-        addLandingGraph(onNavigateToRoute, popBack)
+        addLandingGraph(onNavigateToRoute, popBack, navigateAndClear)
     }
 
     navigation(
         route = PROFILE,
-        startDestination = AppSections.PROFILE.route
+        startDestination = AppSections.PROFILE.route // profile
+//        startDestination = "${AppSections.HOME.route}/quiz/question" // profile
     ) {
-        addAppGraph(onNavigateToRoute, popBack)
+        addAppGraph(onNavigateToRoute, popBack, navigateAndClear)
     }
 
     navigation(
         route = WELCOME,
-        startDestination = WelcomeSections.WELCOME.route
+        startDestination = WelcomeSections.WELCOME.route // welcome
     ) {
         addWelcomeGraph(onNavigateToRoute, popBack)
     }
 
-//    composable(
-//        "${MEAL_DETAIL_ROUTE}/{${MEAL_ID_KEY}}",
-//        arguments = listOf(navArgument(MEAL_ID_KEY) { type = NavType.LongType })
-//    ) { backStackEntry ->
-//        val arguments = requireNotNull(backStackEntry.arguments)
-//        val mealId = arguments.getLong(MEAL_ID_KEY)
-////        MealDetails(mealId, onNavigateToRoute)
-//    }
-//    composable(
-//        route = "ForgotPassword",
-//        enterTransition = { slideIntoContainer() },
-//        exitTransition = { FadeOut() })
-//    { ForgotPassword(navController) }
-//    composable(
-//        route = "ResetPassword",
-//        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
-//        exitTransition = {FadeOut() }) { ResetPasswordScreen(navController) }
-//    composable(
-//        route = "Signup",
-//        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
-//        exitTransition = { FadeOut() }) { Signup(navController) }
-//    composable(
-//        route = "Homepage",
-//        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
-//        exitTransition = { FadeOut() }) { ProfilePage(navController) }
-//    composable(
-//        route = "Welcome",
-//        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
-//        exitTransition = { FadeOut() }) { WelcomePage(navController) }
-//    composable(
-//        route = "Questionnaire",
-//        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
-//        exitTransition = { FadeOut() }) { Questionnaire(navController) }
-//    composable(
-//        route = "Homepage/Edit",
-//        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
-//        exitTransition = { FadeOut() }) { EditProfile(navController) }
-//    composable(
-//        route = "Home",
-//        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
-//        exitTransition = { FadeOut() }) { ProfilePage(navController) }
+    composable(
+        "${AppSections.BARCODE_SCAN.route}/{${BARCODE_KEY}}",
+        arguments = listOf(navArgument(BARCODE_KEY) { type = NavType.StringType })
+    ) { backStackEntry ->
+        BackHandler {
+            navigateToProfile(navigateAndClear)
+        }
+        val arguments = requireNotNull(backStackEntry.arguments)
+        val barcode = arguments.getString(BARCODE_KEY)
+        FoodDetailsScreen(barcode!!, navigateAndClear = navigateAndClear)
+    }
+    composable(
+        "${AppSections.SEARCH.route}/{${RECIPE_URI_KEY}}",
+        arguments = listOf(navArgument(RECIPE_URI_KEY) { type = NavType.StringType })
+    ) { backStackEntry ->
+        BackHandler {
+            // pass
+        }
+        val arguments = requireNotNull(backStackEntry.arguments)
+        val recipeUri = arguments.getString(RECIPE_URI_KEY)
+        RecipeDetail(
+            recipeUri!!,
+            popBack,
+            navigateAndClear
+        )
+    }
+    composable(
+        "${AppSections.HOME.route}/{${INFO_PAGE_KEY}}",
+        arguments = listOf(navArgument(INFO_PAGE_KEY) { type = NavType.StringType })
+    ) { backStackEntry ->
+        val arguments = requireNotNull(backStackEntry.arguments)
+        val infoId = arguments.getString(INFO_PAGE_KEY)
+        val page = InformationPageManager.informationPages.first { it.infoPageId == infoId }
+        InformationPageScreen(page, popBack)
+    }
+    composable(
+        "${AppSections.HOME.route}/quiz/result/{${IS_CORRECT_KEY}}",
+        enterTransition = { slideIntoContainer() },
+    ) { backStackEntry ->
+        val isCorrect = backStackEntry.arguments?.getString("isCorrect")?.toBoolean() ?: false
+        QuizResultScreen(
+            isCorrect = isCorrect,
+            onPlayAgain = { onNavigateToRoute("${AppSections.HOME.route}/quiz/question") },
+            navigateAndClear
+        )
+    }
 
 }
 

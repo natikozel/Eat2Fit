@@ -19,16 +19,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.finalproj.ui.theme.Eat2FitTheme
+import com.example.finalproj.views.roundToHalf
 
 @Composable
 fun CircularDeterminateIndicator(
-    progress : Float , storageUsed : String , storageTotal : String , modifier : Modifier = Modifier
+    progress : Float, currentCalories : String, availableCalories : String, modifier : Modifier = Modifier
 ) {
     val animatedProgress by animateFloatAsState(
-        targetValue = progress ,
+        targetValue = progress/100 ,
         animationSpec = tween(durationMillis = 1000 , easing = LinearOutSlowInEasing) ,
         label = ""
     )
@@ -52,15 +53,24 @@ fun CircularDeterminateIndicator(
             strokeCap = StrokeCap.Round ,
         )
 
+        val color =
+            if (progress >= 90) {
+                Eat2FitTheme.colors.red
+            } else {
+                Eat2FitTheme.colors.lightGreen
+            }
+
+
         Column(verticalArrangement = Arrangement.SpaceAround, horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "87%" ,
+                text = "${roundToHalf(progress)}%",
+                color = color,
                 textAlign = TextAlign.Center ,
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                text = "1305 Calories" ,
+                text = "$currentCalories\nCalories" ,
                 textAlign = TextAlign.Center ,
                 style = MaterialTheme.typography.titleLarge
             )

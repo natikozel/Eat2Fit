@@ -3,29 +3,47 @@
     <string name="app_name">Eat2Fit</string>
     <string name="fileprovider">com.jerry.jetpack_take_select_photo_image.components.fileprovider</string>
 
-    <!-- Home Tabs -->
-    <string name="home_feed">Home</string>
-    <string name="home_search">Search</string>
-    <string name="home_scanner">Scanner</string>
-    <string name="home_meals">Meals</string>
-    <string name="home_profile">Profile</string>
-
+    <!-- Home Destinations -->
+    <string name="landing_destination">landing</string>
+    <string name="welcome_destination">welcome</string>
+    <string name="profile_destination">profile</string>
 
     <!-- Landing routes -->
-    <string name="landing_signup">Sign up</string>
-    <string name="landing_forgot_password">Forgot password</string>
-    <string name="landing_main">Landing Main</string>
+    <string name="landing_main">main</string>
+    <string name="landing_signup">signup</string>
+    <string name="landing_forgot_password">forgot_password</string>
+
+    <!-- Profile routes -->
+    <string name="feed">home</string>
+    <string name="search">search</string>
+    <string name="scanner">scan</string>
+    <string name="meals">meals</string>
+    <string name="profile">profile</string>
+    <string name="profile_edit">myProfile/edit</string>
 
     <!-- Authentication -->
     <string name="email">Email</string>
     <string name="password">Password</string>
 
-    <!-- Routes -->
-    <string name="home_route">Home</string>
-    <string name="landing_route">Landing</string>
-    <string name="profile_route">Profile</string>
-    <string name="profile_edit_route">Profile/Edit</string>
-    <string name="search_route">Search</string>
-    <string name="meals_route">Meals</string>
+    <!-- Resources -->
+    <string name="search_eat2fit">Search in Eat2Fit!</string>
+    <string name="search_no_matches">No matches for “%1s”</string>
+    <string name="search_no_matches_retry">Try broadening your search</string>
+    <string name="search_count">%1d items</string>
+    <string name="label_search">Perform search</string>
+
+    <string name="no_recipe_found">No recipe found</string>
+    <string name="welcome_to_your">Welcome to your</string>
+    <string name="eat2fit">Eat2Fit</string>
+    <string name="dietary_journey">Dietary Journey</string>
+    <string name="get_started">Get Started</string>
+    <string name="logo_image">Logo Image</string>
+    <string name="back">Back</string>
+    <string name="search_in_eat2fit">Search in Eat2Fit!</string>
+    <string name="calories">Calories: %1$.2f</string>
+    <string name="ingredients">Ingredients:</string>
+    <string name="main">main</string>
+    <string name="signup">signup</string>
+    <string name="forgot_password">forgot_password</string>
 
 </resources>

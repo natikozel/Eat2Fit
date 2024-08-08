@@ -1,7 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
-<paths>
-    //we store at cache
-    <cache-path
-        name="temp_images"
-        path="images/" />
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path name="my_images" path="Android/data/com.example.finalproj/files/Pictures" />
 </paths>

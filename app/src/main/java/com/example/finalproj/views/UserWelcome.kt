@@ -34,11 +34,10 @@ import com.example.finalproj.components.Eat2FitSurface
 
 
 enum class WelcomeSections(
-    @StringRes val title: Int,
     val route: String
 ) {
-    WELCOME(R.string.landing_main, "main"),
-    QUESTIONNAIRE(R.string.home_feed, "questionnaire"),
+    WELCOME("new_user_welcome"),
+    QUESTIONNAIRE("questionnaire"),
 
 }
 
@@ -159,7 +158,6 @@ fun WelcomePage(
                     )
                 }
             }
-
         }
     }
 }

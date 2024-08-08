@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
-import androidx.annotation.StringRes
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +45,7 @@ import com.example.finalproj.components.Password
 import com.example.finalproj.database.AuthenticationManager
 import com.example.finalproj.database.DatabaseKeys
 import com.example.finalproj.database.DatabaseManager
+import com.example.finalproj.database.models.User
 import com.example.finalproj.ui.theme.Eat2FitTheme
 import com.example.finalproj.util.Destinations
 import com.example.finalproj.util.validation.EmailState
@@ -55,30 +56,33 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 
 
 fun NavGraphBuilder.addLandingGraph(
     onNavigateToRoute: (String) -> Unit,
     popBack: () -> Boolean,
+    navigateAndClear: (String) -> Unit
 ) {
     composable(
-        LandingSections.LANDING.route,
+        LandingSections.MAIN.route,
         enterTransition = { fadeIn() },
         exitTransition = { slideOutOfContainer() }) {
-        CheckIfUserIsLoggedIn(
-            onSuccess =  { _ -> // User
-                DatabaseManager.readUserKey(DatabaseKeys.HAS_LOGGED_IN_ONCE)?.
-                addOnSuccessListener {dataSnapshot ->
-                    dataSnapshot.getValue(Boolean::class.java)?.let { hasLoggedInOnce ->
-                        if (hasLoggedInOnce) {
-                            onNavigateToRoute(Destinations.PROFILE)
-                        } else {
-                            onNavigateToRoute(Destinations.WELCOME)
-                        }
-                    }
 
+        BackHandler(true) {
+            // pass
+        }
+
+        CheckIfUserIsLoggedIn(
+            onSuccess = {
+                DatabaseManager.readUser().addOnSuccessListener { dataSnapshot ->
+                    AuthenticationManager.setUser(dataSnapshot.getValue(User::class.java)!!)
+                    if (AuthenticationManager.getUser().hasLoggedInOnce!!) {
+                        DatabaseManager.attachUserListener()
+                        navigateAndClear(Destinations.PROFILE)
+                    } else {
+                        onNavigateToRoute(Destinations.WELCOME)
+                    }
                 }
             },
             onFailure = {
@@ -90,24 +94,31 @@ fun NavGraphBuilder.addLandingGraph(
         LandingSections.SIGNUP.route,
         enterTransition = { slideIntoContainer() },
         exitTransition = { fadeOut() }) {
+        BackHandler(true) {
+            // pass
+        }
+
         Signup(popBack)
     }
     composable(
         LandingSections.FORGOT_PASSWORD.route,
         enterTransition = { slideIntoContainer() },
         exitTransition = { fadeOut() }) {
+        BackHandler(true) {
+            // pass
+        }
+
         ForgotPassword(popBack)
     }
 }
 
 
 enum class LandingSections(
-    @StringRes val title: Int,
     val route: String
 ) {
-    LANDING(R.string.landing_main, "landing/main"),
-    SIGNUP(R.string.home_feed, "landing/signup"),
-    FORGOT_PASSWORD(R.string.home_search, "landing/forgot_password"),
+    MAIN("main"), // landing/main
+    SIGNUP("signup"), // landing/signup
+    FORGOT_PASSWORD("forgot_password"), // landing_forgot_password
 
 }
 
@@ -144,34 +155,34 @@ private fun Context.buildPlayerView(exoPlayer: ExoPlayer) =
         useController = false
     }
 
-
 private fun Context.doLogin(
     onNavigateToRoute: (String) -> Unit,
     email: String,
     password: String,
+    onError: (String) -> Unit
 ) {
     AuthenticationManager.loginUser(
         email = email,
         password = password,
-        onSuccess = { user ->
+        onSuccess = {
+            DatabaseManager.attachUserListener()
             onNavigateToRoute(Destinations.PROFILE)
         },
         onFailure = { exception ->
-            // Handle error
+            onError(exception.message ?: "Unknown error")
         }
     )
-
 }
 
 
 @Composable
 private fun CheckIfUserIsLoggedIn(
-    onSuccess: (user: FirebaseUser) -> Unit,
+    onSuccess: () -> Unit,
     onFailure: @Composable () -> Unit,
 ) {
     val currentUser = Firebase.auth.currentUser
     if (currentUser != null) {
-        onSuccess(currentUser)
+        onSuccess()
     } else {
         onFailure()
     }
@@ -181,11 +192,11 @@ private fun CheckIfUserIsLoggedIn(
 fun Login(onNavigateToRoute: (String) -> Unit) {
 
     val context = LocalContext.current
-    val passwordFocusRequester = FocusRequester();
+    val passwordFocusRequester = FocusRequester()
     val exoPlayer = remember { context.buildExoPlayer() }
-
     val emailState = remember { EmailState() }
     val passwordState = remember { PasswordState() }
+    val loginErrorMessage = remember { mutableStateOf<String?>(null) }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -206,7 +217,6 @@ fun Login(onNavigateToRoute: (String) -> Unit) {
             ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-
             Icon(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = null,
@@ -215,20 +225,36 @@ fun Login(onNavigateToRoute: (String) -> Unit) {
             )
             Email(
                 emailState = emailState,
-                onImeAction = { passwordFocusRequester.requestFocus() })
+                onImeAction = { passwordFocusRequester.requestFocus() }
+            )
             Password(
                 passwordState = passwordState,
                 modifier = Modifier.focusRequester(passwordFocusRequester),
                 onImeAction = {
                     if (emailState.isValid && passwordState.isValid)
-                        context.doLogin(onNavigateToRoute, emailState.text, passwordState.text)
-                })
+                        context.doLogin(
+                            onNavigateToRoute,
+                            emailState.text,
+                            passwordState.text,
+                            onError = { loginErrorMessage.value = it }
+                        )
+                }
+            )
+
+            loginErrorMessage.value?.let {
+                Text(
+                    it,
+                    color = Color.Red,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+
+
 
             TextButton(onClick = {
                 onNavigateToRoute(LandingSections.FORGOT_PASSWORD.route)
             }) {
                 Text("Forgot Password?", color = Color.White, fontWeight = FontWeight.Bold)
-
             }
             Spacer(Modifier.height(10.dp))
 
@@ -236,20 +262,21 @@ fun Login(onNavigateToRoute: (String) -> Unit) {
                 enabled = emailState.isValid && passwordState.isValid,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    context.doLogin(onNavigateToRoute, emailState.text, passwordState.text)
+                    context.doLogin(
+                        onNavigateToRoute,
+                        emailState.text,
+                        passwordState.text,
+                        onError = { loginErrorMessage.value = it }
+                    )
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Green,
                     contentColor = Color.Black,
                     disabledContainerColor = Eat2FitTheme.colors.emptyGreen
                 ),
+                content = { Text("SIGN IN", Modifier.padding(vertical = 8.dp)) }
+            )
 
-                content = { Text("SIGN IN", Modifier.padding(vertical = 8.dp)) },
-
-                )
-
-
-//            Spacer(Modifier.height(40.dp))
             Column(
                 verticalArrangement = Arrangement.spacedBy(14.dp, alignment = Alignment.Bottom),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -273,5 +300,3 @@ fun Login(onNavigateToRoute: (String) -> Unit) {
         }
     }
 }
-
-

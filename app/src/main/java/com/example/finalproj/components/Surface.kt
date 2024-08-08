@@ -1,9 +1,11 @@
 package com.example.finalproj.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -14,6 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -28,6 +32,7 @@ fun Eat2FitSurface(
     contentColor: Color = Eat2FitTheme.colors.textSecondary,
     border: BorderStroke? = null,
     elevation: Dp = 0.dp,
+    backgroundImage: Painter? = null,
     content: @Composable () -> Unit
 ) {
     Box(
@@ -41,6 +46,21 @@ fun Eat2FitSurface(
             )
             .clip(shape)
     ) {
+        if (backgroundImage != null) {
+            Image(
+                painter = backgroundImage,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        color = Color.White.copy(alpha = 0.5f)
+                    )
+            )
+        }
         CompositionLocalProvider(LocalContentColor provides contentColor, content = content)
     }
 }

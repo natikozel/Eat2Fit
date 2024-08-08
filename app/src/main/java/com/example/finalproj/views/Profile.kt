@@ -1,9 +1,17 @@
 package com.example.finalproj.views
 
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import coil.request.ImageRequest
-import coil.compose.AsyncImage
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -77,6 +85,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.finalproj.R
@@ -87,19 +96,28 @@ import com.example.finalproj.components.Eat2FitDivider
 import com.example.finalproj.components.Eat2FitScaffold
 import com.example.finalproj.components.Eat2FitSurface
 import com.example.finalproj.database.AuthenticationManager
+import com.example.finalproj.database.DatabaseKeys
 import com.example.finalproj.database.DatabaseManager
+import com.example.finalproj.database.StorageManager
 import com.example.finalproj.database.models.Goal
 import com.example.finalproj.database.models.User
 import com.example.finalproj.util.Destinations
-import com.example.finalproj.util.dailyCaloriesConsumption
 import com.example.finalproj.util.icons.rememberBarcodeScanner
 import com.example.finalproj.util.icons.rememberFastfood
 import kotlin.math.max
 import kotlin.math.min
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import android.provider.Settings
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.collectAsState
+import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModel
+import com.example.finalproj.database.models.Meal
+import com.example.finalproj.database.models.QuizQuestions
+import com.example.finalproj.util.PermissionRequester
 
-const val progress = 0.87f
-const val storageUsed = "1305"
-const val storageTotal = "1500"
 
 private val TitleHeight = 128.dp
 private val GradientScroll = 180.dp
@@ -111,7 +129,6 @@ private val MinTitleOffset = 56.dp
 private val UserDetailsHeight = 180.dp
 private val MinImageOffset = 12.dp
 private val MaxTitleOffset = ImageOverlap + MinTitleOffset + GradientScroll
-private val FrameShape = RoundedCornerShape(10.dp)
 private val HzPadding = Modifier.padding(horizontal = 24.dp)
 
 
@@ -120,11 +137,11 @@ enum class AppSections(
     val icon: ImageVector,
     val route: String
 ) {
-    HOME(R.string.home_feed, Icons.Outlined.Home, "home"),
-    SEARCH(R.string.home_feed, Icons.Outlined.Search, "search"),
-    BARCODE_SCAN(R.string.home_search, rememberBarcodeScanner(), "barcode_scanner"),
-    MEALS(R.string.meals_route, rememberFastfood(), "meals"),
-    PROFILE(R.string.profile_route, Icons.Outlined.AccountCircle, "profile"),
+    HOME(R.string.feed, Icons.Outlined.Home, "home"),
+    SEARCH(R.string.search, Icons.Outlined.Search, "search"),
+    BARCODE_SCAN(R.string.scanner, rememberBarcodeScanner(), "barcode_scanner"),
+    MEALS(R.string.meals, rememberFastfood(), "meals"),
+    PROFILE(R.string.profile, Icons.Outlined.AccountCircle, "myProfile"),
 
 }
 
@@ -132,95 +149,114 @@ enum class AppSections(
 fun NavGraphBuilder.addAppGraph(
     onNavigateToRoute: (String) -> Unit,
     popBack: () -> Boolean,
+    navigateAndClear: (String) -> Unit
 ) {
     composable(
         AppSections.PROFILE.route,
         enterTransition = { fadeIn() },
-//        exitTransition = { slideOutOfContainer() }
-        ) {
+    ) {
+
         BackHandler(true) {
             // pass
         }
-        ProfilePage(popBack, onNavigateToRoute)
+        ProfilePage(onNavigateToRoute, navigateAndClear)
     }
     composable(
         "${AppSections.PROFILE.route}/edit",
         enterTransition = { fadeIn() },
-        exitTransition = { slideOutOfContainer() }) {
+//        exitTransition = { slideOutOfContainer() }
+    ) {
         EditProfile(popBack)
     }
     composable(
-        AppSections.SEARCH.route,
-        enterTransition = { fadeIn() },
-//        exitTransition = { slideOutOfContainer() }
-        ) {
-        Search(onMealClick = {}, onNavigateToRoute = onNavigateToRoute)
+        AppSections.BARCODE_SCAN.route,
+    ) {
+        BarcodeScan(
+            popBack,
+            onSuccessfulScan = { barcode -> onNavigateToRoute("${AppSections.BARCODE_SCAN.route}/$barcode") },
+            onNavigateToRoute
+        )
     }
+
+    composable(
+        AppSections.SEARCH.route, // profile/search
+        enterTransition = { fadeIn() },
+    ) {
+        Search(
+            onNavigateToRoute,
+            onSearchResultClick = { recipeUri -> onNavigateToRoute("${AppSections.SEARCH.route}/$recipeUri") })
+    }
+
+    composable(
+        AppSections.MEALS.route,
+        enterTransition = { fadeIn() },
+    ) {
+        MealsView(navigateAndClear)
+    }
+
+    composable(
+        AppSections.HOME.route,
+        enterTransition = { fadeIn() },
+    ) {
+        HomePage(
+            navigateAndClear,
+            onNavigateToRoute,
+            onInformationPageClick = { infoPageId -> onNavigateToRoute("${AppSections.HOME.route}/$infoPageId") }
+        )
+    }
+
+    composable(
+        "${AppSections.HOME.route}/quiz",
+        enterTransition = { slideIntoContainer() },
+    ) {
+        QuizIntroductionScreen(
+            popBack,
+            navigateToQuiz = { onNavigateToRoute("${AppSections.HOME.route}/quiz/question") })
+    }
+    composable(
+        "${AppSections.HOME.route}/quiz/question",
+        enterTransition = { fadeIn() },
+    ) {
+        QuizQuestionScreen(navigateAndClear, onNavigateToRoute)
+    }
+
 }
 
 
 @Composable
 fun ProfilePage(
-    popBack: () -> Boolean,
     onNavigateToRoute: (String) -> Unit,
+    navigateAndClear: (String) -> Unit,
 ) {
 
-    var user by remember { mutableStateOf<User?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
-    val userId = AuthenticationManager.getCurrentUser()?.uid
-
-    LaunchedEffect(userId) {
-        userId?.let {
-            DatabaseManager.readUser(userId)
-                .addOnSuccessListener { dataSnapshot ->
-                    user = dataSnapshot.getValue(User::class.java)
-                    isLoading = false
-                }
-                .addOnFailureListener { exception ->
-                    // Handle error
-                    isLoading = false
-                }
-        }
-    }
+    val user = AuthenticationManager.getUser()
+    val currentCalories = calculateCalories(user.previousMeals)
 
 
-
-    if (isLoading) {
-        // Show a loading indicator while the user data is being fetched
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-    } else {
-        user?.let {
-            Eat2FitScaffold(
-                bottomBar = {
-                    BottomNavigationMenu(
-                        tabs = AppSections.values(),
-                        currentRoute = "profile",
-                        navigateToRoute = onNavigateToRoute
-                    )
-                }
+    Eat2FitScaffold(
+        bottomBar = {
+            BottomNavigationMenu(
+                tabs = AppSections.values(),
+                currentRoute = AppSections.PROFILE.route,
+                navigateToRoute = onNavigateToRoute
             )
-            {
+        }
+    )
+    {
+        Box(
+            Modifier
+                .fillMaxSize()
+        ) {
+            val scroll = rememberScrollState(0)
+            Header()
+            Body(scroll, user, currentCalories, user.maxCalories)
+            Title(
+                navigateAndClear = navigateAndClear,
+                onNavigateToRoute = onNavigateToRoute,
+                user = user,
+            ) { scroll.value }
+            Image(user = user) { scroll.value }
 
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                ) {
-                    val scroll = rememberScrollState(0)
-                    Header()
-                    Body(scroll, user!!)
-                    Title(onNavigateToRoute = onNavigateToRoute, user = user!!) { scroll.value }
-                    Image(R.drawable.profiledemo) { scroll.value }
-
-
-                }
-            }
-        } ?: run {
-            // Handle the case where user data is null
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "User not found")
-            }
 
         }
     }
@@ -229,7 +265,6 @@ fun ProfilePage(
 @Composable
 private fun Header() {
     val brushColors = Eat2FitTheme.colors.green
-
     val infiniteTransition = rememberInfiniteTransition(label = "background")
     val targetOffset = with(LocalDensity.current) {
         3000.dp.toPx()
@@ -268,7 +303,9 @@ private fun Header() {
 @Composable
 private fun Title(
     user: User,
-    onNavigateToRoute: (String) -> Unit, scrollProvider: () -> Int
+    onNavigateToRoute: (String) -> Unit,
+    navigateAndClear: (String) -> Unit,
+    scrollProvider: () -> Int,
 ) {
     val maxOffset = with(LocalDensity.current) { MaxTitleOffset.toPx() }
     val minOffset = with(LocalDensity.current) { MinTitleOffset.toPx() }
@@ -280,7 +317,6 @@ private fun Title(
         ),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-//            .fillMaxSize()
             .heightIn(min = UserDetailsHeight)
             .statusBarsPadding()
             .offset {
@@ -308,7 +344,7 @@ private fun Title(
         }
         Eat2FitButton(onClick = {
             AuthenticationManager.logoutUser()
-            onNavigateToRoute(Destinations.LANDING)
+            navigateAndClear(Destinations.LANDING)
         }) {
             Text(
                 text = "Log out",
@@ -369,22 +405,42 @@ private fun RoundFrame(data: String, title: String) {
 
 }
 
-@Composable()
-fun Notification_Section(modifier: Modifier = Modifier) {
+@Composable
+fun Notification_Section(
+    modifier: Modifier = Modifier,
+    viewModel: NotificationViewModel = NotificationViewModel()
+) {
+    val context = LocalContext.current
+    val notificationsEnabled by viewModel.notificationsEnabled.collectAsState()
+    var showPermissionRequester by remember { mutableStateOf(false) }
 
-    var checked by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        viewModel.checkNotificationSettings(context)
+    }
 
+    if (showPermissionRequester) {
+        PermissionRequester(
+            permission = Manifest.permission.POST_NOTIFICATIONS,
+            rationale = "Notification permission is required to show notifications."
+        ) { isGranted ->
+            if (isGranted) {
+                Toast.makeText(context, "Notifications enabled", Toast.LENGTH_SHORT).show()
+                viewModel.setNotificationsEnabled(true)
+            } else {
+                Toast.makeText(context, "Notifications disabled", Toast.LENGTH_SHORT).show()
+                viewModel.setNotificationsEnabled(false)
+            }
+            showPermissionRequester = false
+        }
+    }
     Box(
         modifier
             .fillMaxSize()
             .shadow(10.0.dp, shape = RoundedCornerShape(16.0.dp))
             .clip(RoundedCornerShape(16.0.dp))
             .size(325.0.dp, 109.0.dp)
-//            .fillMaxWidth()
-//            .fillMaxHeight()
             .background(Color(1.0f, 1.0f, 1.0f, 1.0f))
     ) {
-
         Column(
             Modifier
                 .fillMaxSize()
@@ -392,7 +448,6 @@ fun Notification_Section(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start
         ) {
-
             Text(
                 text = "Notification",
                 style = TextStyle(
@@ -403,16 +458,8 @@ fun Notification_Section(modifier: Modifier = Modifier) {
                     color = Color(0xFF1D1617),
                 )
             )
-
             Spacer(Modifier.height(10.dp))
-
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-//                Icon(
-//                    painter = painterResource(id = R.drawable.notification),
-//                    contentDescription = null,
-////                    Modifier.size(10.dp),
-//                    tint = Color.White
-//                )
                 Text(
                     "Pop-up Notification",
                     Modifier.wrapContentHeight(Alignment.Top),
@@ -423,9 +470,13 @@ fun Notification_Section(modifier: Modifier = Modifier) {
                     )
                 )
                 Switch(
-                    checked = checked,
-                    onCheckedChange = {
-                        checked = it
+                    checked = notificationsEnabled,
+                    onCheckedChange = { isChecked ->
+                        if (isChecked) {
+                            showPermissionRequester = true
+                        } else {
+                            viewModel.revokeNotificationPermission(context)
+                        }
                     },
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = Eat2FitTheme.colors.white,
@@ -436,16 +487,15 @@ fun Notification_Section(modifier: Modifier = Modifier) {
                 )
             }
         }
-
     }
-
 }
-
 
 @Composable
 private fun Body(
     scroll: ScrollState,
-    user: User
+    user: User,
+    currentCalories: Int,
+    availableCalories: Int?
 ) {
     Column {
         Spacer(
@@ -463,19 +513,18 @@ private fun Body(
                 Column(
                     Modifier
                         .fillMaxSize(),
-//                            .padding(24.dp)
-//                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+
+                    ) {
                     Spacer(Modifier.height(ImageOverlap))
                     Spacer(Modifier.height(TitleHeight))
                     Spacer(Modifier.height(32.dp))
-//                    var seeMore by remember { mutableStateOf(true) }
-//                    Spacer(Modifier.height(40.dp))
-//                    Spacer(Modifier.height(16.dp))
                     Notification_Section(modifier = HzPadding)
                     Spacer(Modifier.height(32.dp))
-                    DailyProgress_Section(modifier = HzPadding, user)
-//                    Text(text = "Hello World")
+                    DailyProgress_Section(
+                        user,
+                        currentCalories,
+                        availableCalories
+                    )
                     Spacer(Modifier.height(32.dp))
                     Spacer(
                         modifier = Modifier
@@ -491,8 +540,11 @@ private fun Body(
 
 
 @Composable
-private fun DailyProgress_Section(modifier: Modifier = Modifier, user: User) {
-
+private fun DailyProgress_Section(
+    user: User,
+    currentCalories: Int,
+    availableCalories: Int?
+) {
 
     Text(
         "Daily progress",
@@ -515,7 +567,7 @@ private fun DailyProgress_Section(modifier: Modifier = Modifier, user: User) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
-            modifier
+            modifier = HzPadding
                 .shadow(
                     elevation = 2.dp,
                     spotColor = Color(0x0F101828),
@@ -561,10 +613,12 @@ private fun DailyProgress_Section(modifier: Modifier = Modifier, user: User) {
                             textAlign = TextAlign.Right,
                         )
                     )
+
+
                     CircularDeterminateIndicator(
-                        progress = progress,
-                        storageUsed = storageUsed,
-                        storageTotal = storageTotal,
+                        progress = calculateProgress(availableCalories ?: 0, currentCalories),
+                        currentCalories = currentCalories.toString(),
+                        availableCalories = availableCalories.toString(),
                         modifier = Modifier
 //                            .align(Alignment.TopCenter)
 //                            .offset(y = 98.dp)
@@ -576,16 +630,19 @@ private fun DailyProgress_Section(modifier: Modifier = Modifier, user: User) {
                         20.dp,
                         alignment = Alignment.CenterVertically
                     ),
-                    horizontalAlignment = Alignment.End
+                    horizontalAlignment = Alignment.Start
                 ) {
-                    Row() {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
                         // Icon
                         // Padding
                         Column(
                             verticalArrangement = Arrangement.spacedBy(
                                 4.dp,
                                 alignment = Alignment.CenterVertically
-                            ), horizontalAlignment = Alignment.CenterHorizontally
+                            ), horizontalAlignment = Alignment.Start
                         ) {
                             Text(
                                 text = testBasedOnGoal(user.goal!!), style = TextStyle(
@@ -598,12 +655,7 @@ private fun DailyProgress_Section(modifier: Modifier = Modifier, user: User) {
                                 )
                             )
                             Text(
-                                text = dailyCaloriesConsumption(
-                                    user.weight!!,
-                                    user.height!!,
-                                    user.age!!,
-                                    user.gender!!
-                                ).toString(),
+                                text = availableCalories.toString(),
                                 style = TextStyle(
                                     fontSize = 14.sp,
                                     lineHeight = 28.sp,
@@ -616,17 +668,19 @@ private fun DailyProgress_Section(modifier: Modifier = Modifier, user: User) {
                         }
                     }
 
-                    Row() {
-                        // Icon
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween                        // Icon
                         // Padding
+                    ) {
                         Column(
                             verticalArrangement = Arrangement.spacedBy(
                                 4.dp,
                                 alignment = Alignment.CenterVertically
-                            ), horizontalAlignment = Alignment.CenterHorizontally
+                            ), horizontalAlignment = Alignment.Start
                         ) {
                             Text(
-                                text = "Goal", style = TextStyle(
+                                text = "Remaining", style = TextStyle(
                                     fontSize = 20.sp,
                                     lineHeight = 28.sp,
                                     fontFamily = FontFamily(Font(R.font.karla_bold)),
@@ -636,7 +690,10 @@ private fun DailyProgress_Section(modifier: Modifier = Modifier, user: User) {
                                 )
                             )
                             Text(
-                                text = "1500",
+                                text = calculateRemaining(
+                                    availableCalories ?: 0,
+                                    currentCalories
+                                ),
                                 style = TextStyle(
                                     fontSize = 14.sp,
                                     lineHeight = 28.sp,
@@ -658,6 +715,17 @@ private fun DailyProgress_Section(modifier: Modifier = Modifier, user: User) {
     }
 }
 
+fun calculateRemaining(
+    availableCalories: Int,
+    currentCalories: Int,
+): String {
+    if (availableCalories - currentCalories < 0) {
+        return "Excess eating"
+    } else {
+        return (availableCalories - currentCalories).toString()
+    }
+}
+
 
 private fun testBasedOnGoal(goal: Goal): String {
     if (goal == Goal.LOSE)
@@ -670,7 +738,7 @@ private fun testBasedOnGoal(goal: Goal): String {
 
 @Composable
 private fun Image(
-    imageRes: Int = R.drawable.profiledemo,
+    user: User,
     scrollProvider: () -> Int
 ) {
     val collapseRange =
@@ -684,8 +752,9 @@ private fun Image(
         modifier = HzPadding.statusBarsPadding()
     ) {
         UserImage(
-            imageRes = imageRes,
+//            initialImageUrl = user.imageUrl,
             contentDescription = null,
+            user = user,
             modifier = Modifier.fillMaxSize()
         )
     }
@@ -728,26 +797,39 @@ private fun CollapsingImageLayout(
 
 @Composable
 fun UserImage(
-    @DrawableRes
-    imageRes: Int,
-    contentDescription: String?,
     modifier: Modifier = Modifier,
+    user: User,
+    contentDescription: String?,
     elevation: Dp = 0.dp
 ) {
+    var imageUrl by remember { mutableStateOf(user.imageUrl) }
+
     Eat2FitSurface(
         color = Color.LightGray,
         elevation = elevation,
         shape = CircleShape,
         modifier = modifier
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(imageRes)
-                .crossfade(true)
-                .build(),
+        MyImageArea(
+            uri = imageUrl,
+            directory = LocalContext.current.cacheDir,
             contentDescription = contentDescription,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
+            onSetUri = { uri ->
+                val newImageUrl = uri.toString()
+                imageUrl = newImageUrl
+
+                StorageManager.uploadImage(uri, onSuccess = {
+                    DatabaseManager.updateUserKey(DatabaseKeys.IMAGE_URL, it)
+                }, onFailure = {
+                })
+            },
+            onRemoveUri = {
+                imageUrl = null
+                DatabaseManager.updateUserKey(DatabaseKeys.IMAGE_URL, null)
+
+            }
         )
     }
 }
@@ -756,5 +838,76 @@ fun UserImage(
 fun capitalizeName(name: String): String {
     return name.split(" ").joinToString(" ") { word ->
         word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+    }
+}
+
+
+fun calculateProgress(caloriesGoal: Int, currentCalories: Int): Float {
+
+    if (caloriesGoal < currentCalories)
+        return 100f
+
+    return (currentCalories * 100) / caloriesGoal.toFloat()
+}
+
+fun calculateCalories(meals: HashMap<String, Meal>?): Int {
+    var totalCalories = 0
+    if (meals != null) {
+        for (meal in meals) {
+            totalCalories += meal.value.calories!!.toInt()
+        }
+    }
+    return totalCalories
+}
+
+fun leftoverCalories(): Int {
+    val user = AuthenticationManager.getUser()
+    val userCalories = user.maxCalories
+    val currentCalories = calculateCalories(user.previousMeals)
+    return if (userCalories != null) {
+        userCalories - currentCalories
+    } else {
+        0
+    }
+}
+
+
+fun navigateToProfile(
+    navigateAndClear: (String) -> Unit
+): Boolean {
+    navigateAndClear(AppSections.PROFILE.route)
+    return true
+}
+
+fun navigateToHome(
+    navigateAndClear: (String) -> Unit
+): Boolean {
+    navigateAndClear(AppSections.HOME.route)
+    return true
+}
+
+
+class NotificationViewModel : ViewModel() {
+    private val _notificationsEnabled = MutableStateFlow(false)
+    val notificationsEnabled: StateFlow<Boolean> = _notificationsEnabled
+
+    fun checkNotificationSettings(context: Context) {
+        viewModelScope.launch {
+            val enabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
+            _notificationsEnabled.value = enabled
+        }
+    }
+
+    fun setNotificationsEnabled(enabled: Boolean) {
+        _notificationsEnabled.value = enabled
+    }
+
+    fun revokeNotificationPermission(context: Context) {
+        viewModelScope.launch {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.fromParts("package", context.packageName, null)
+            }
+            context.startActivity(intent)
+        }
     }
 }
