@@ -1,4 +1,4 @@
-package com.example.finalproj.views
+package com.example.finalproj.components
 
 import android.Manifest
 import android.content.pm.PackageManager

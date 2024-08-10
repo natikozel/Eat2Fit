@@ -27,12 +27,7 @@ data class User(
     var imageUrl: String? = null,
     var recentMeal: Meal? = null,
     var suggestedMeals: List<Meal>? = null,
-
-
-) {
-    // Null default values create a no-argument default constructor, which is needed
-    // for deserialization from a DataSnapshot.
-}
+)
 
 
 

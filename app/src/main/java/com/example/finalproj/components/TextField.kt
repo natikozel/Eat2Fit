@@ -22,14 +22,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -41,7 +39,7 @@ import com.example.finalproj.ui.theme.Shapes
 import com.example.finalproj.ui.theme.Tertirary
 import com.example.finalproj.util.validation.EmailState
 import com.example.finalproj.util.validation.PasswordState
-import com.example.finalproj.util.validation.TextState
+import com.example.finalproj.util.validation.DropDownState
 
 
 open class TextFieldState(
@@ -97,7 +95,7 @@ fun textFieldStateSaver(state: TextFieldState) = listSaver<TextFieldState, Any>(
 fun GenericText(
     label: String,
     modifier: Modifier = Modifier,
-    textState: TextFieldState = remember { TextState() },
+    textState: TextFieldState = remember { DropDownState() },
     imeAction: ImeAction = ImeAction.Next,
     onImeAction: () -> Unit = {},
     isOutlined: Boolean = false,
@@ -195,15 +193,8 @@ fun Email(
             value = emailState.text,
             placeholder = { Text("Email") },
             onValueChange = { emailState.text = it },
-//        label = {
-//            Text(
-//                text = stringResource(id = R.string.email),
-//                style = MaterialTheme.typography.bodyMedium,
-//            )
-//        },
             leadingIcon = { Icon(imageVector = icon, contentDescription = null) },
             shape = Shapes.small,
-//            colors = colors,
             modifier = modifier
                 .fillMaxWidth()
                 .onFocusChanged { focusState ->

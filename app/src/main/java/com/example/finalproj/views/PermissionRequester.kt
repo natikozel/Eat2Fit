@@ -1,6 +1,5 @@
-package com.example.finalproj.util
+package com.example.finalproj.views
 
-import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -10,7 +9,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
+import com.example.finalproj.R
 
 @Composable
 fun PermissionRequester(
@@ -44,19 +45,19 @@ fun PermissionRequester(
     if (showRationale) {
         AlertDialog(
             onDismissRequest = { showRationale = false },
-            title = { Text(text = "Permission Required") },
+            title = { Text(text = stringResource(R.string.permission_required)) },
             text = { Text(rationale) },
             confirmButton = {
                 Button(onClick = {
                     showRationale = false
                     launcher.launch(permission)
                 }) {
-                    Text("OK")
+                    Text(stringResource(R.string.ok))
                 }
             },
             dismissButton = {
                 Button(onClick = { showRationale = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )

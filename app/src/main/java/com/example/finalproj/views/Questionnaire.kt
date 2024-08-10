@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -24,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -37,19 +37,14 @@ import com.example.finalproj.components.Eat2FitButton
 import com.example.finalproj.components.Eat2FitSurface
 import com.example.finalproj.components.NavigateBackArrow
 import com.example.finalproj.database.AuthenticationManager
-import com.example.finalproj.database.DatabaseKeys
 import com.example.finalproj.database.DatabaseManager
-import com.example.finalproj.database.SearchAPI
 import com.example.finalproj.database.models.Gender
 import com.example.finalproj.database.models.Goal
-import com.example.finalproj.database.models.ImageType
-import com.example.finalproj.database.models.Meal
 import com.example.finalproj.database.models.User
 import com.example.finalproj.util.Destinations
 import com.example.finalproj.util.dailyCaloriesConsumption
-import com.example.finalproj.util.validation.TextState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import com.example.finalproj.util.validation.DropDownState
+import com.example.finalproj.util.validation.TextStateString
 import java.time.LocalDate
 import java.util.Locale
 
@@ -61,7 +56,6 @@ private fun Context.doSubmit(
     height: String,
     weight: String,
     date: LocalDate,
-    coroutineScope: CoroutineScope
 ) {
     AuthenticationManager.getCurrentUser()?.let { user ->
         DatabaseManager.readUser().addOnSuccessListener { dataSnapshot ->
@@ -82,9 +76,6 @@ private fun Context.doSubmit(
             returnedUser?.hasLoggedInOnce = true
             if (returnedUser != null) {
                 DatabaseManager.updateUser(returnedUser)
-//                coroutineScope.launch {
-//                    SearchAPI.findSuggestedMeals()
-//                }
                 onNavigateToRoute(Destinations.PROFILE)
             }
         }
@@ -99,22 +90,20 @@ fun Questionnaire(
     elevation: Dp = 0.dp
 ) {
 
-    val coroutineScope = rememberCoroutineScope()
-
     val context = LocalContext.current
     val genderState = remember {
-        TextState(input = "Choose Gender")
+        DropDownState(input = "Choose Gender")
     }
     val goalState = remember {
-        TextState(input = "Your Goal")
+        DropDownState(input = "Your Goal")
     }
 
     val heightState = remember {
-        TextState()
+        TextStateString()
     }
 
     val weightState = remember {
-        TextState()
+        TextStateString()
     }
 
     val pickedDate = remember { mutableStateOf(LocalDate.now()) }
@@ -136,10 +125,9 @@ fun Questionnaire(
                     modifier = Modifier
                         .size(width = 100.dp, height = 120.dp),
                     painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "Logo Image",
+                    contentDescription = stringResource(R.string.logo_image),
                     contentScale = ContentScale.FillBounds
                 )
-
             }
 
 
@@ -166,9 +154,7 @@ fun Questionnaire(
 
 
                 Text(
-                    text = "Let’s complete your profile",
-
-                    // Title/H4 (Bold)
+                    text = stringResource(R.string.complete_profile),
                     style = TextStyle(
                         fontSize = 20.sp,
                         lineHeight = 30.sp,
@@ -178,7 +164,7 @@ fun Questionnaire(
                     )
                 )
                 Text(
-                    text = "It will help us to know more about you!",
+                    text = stringResource(R.string.know_more_about_you),
 
                     // Text / Small Text (Regular)
                     style = TextStyle(
@@ -220,7 +206,6 @@ fun Questionnaire(
                                 heightState.text,
                                 weightState.text,
                                 pickedDate.value,
-                                coroutineScope
                             )
                     }) {
                     Column(
@@ -232,7 +217,7 @@ fun Questionnaire(
                     ) {
                         Text(
                             fontSize = 20.sp,
-                            text = "Next",
+                            text = stringResource(R.string.next),
                             textAlign = TextAlign.Center,
                             maxLines = 1
                         )

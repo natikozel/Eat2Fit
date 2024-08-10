@@ -19,13 +19,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -39,20 +39,12 @@ import com.example.finalproj.components.Eat2FitButton
 import com.example.finalproj.components.Eat2FitSurface
 import com.example.finalproj.components.NavigateBackArrow
 import com.example.finalproj.database.AuthenticationManager
-import com.example.finalproj.database.DatabaseKeys
 import com.example.finalproj.database.DatabaseManager
-import com.example.finalproj.database.SearchAPI
-import com.example.finalproj.database.models.Gender
 import com.example.finalproj.database.models.Goal
 import com.example.finalproj.database.models.User
-import com.example.finalproj.util.Destinations
 import com.example.finalproj.util.dailyCaloriesConsumption
-import com.example.finalproj.util.validation.TextState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import okhttp3.internal.notifyAll
-import okhttp3.internal.wait
-import java.time.LocalDate
+import com.example.finalproj.util.validation.DropDownState
+import com.example.finalproj.util.validation.TextStateString
 import java.util.Locale
 
 @Composable
@@ -61,19 +53,16 @@ fun EditProfile(
     modifier: Modifier = Modifier,
     elevation: Dp = 0.dp
 ) {
-
-    val coroutineScope = rememberCoroutineScope()
-
     val goalState = remember {
-        TextState(input = "Your Goal")
+        DropDownState(input = "Your Goal")
     }
 
     val heightState = remember {
-        TextState()
+        TextStateString()
     }
 
     val weightState = remember {
-        TextState()
+        TextStateString()
     }
 
     val context = LocalContext.current
@@ -90,15 +79,13 @@ fun EditProfile(
             weightState.text = user?.weight.toString()
             isLoading = false
         }
-            .addOnFailureListener { exception ->
-                // Handle error
+            .addOnFailureListener {
                 isLoading = false
             }
 
     }
 
     if (isLoading) {
-        // Show a loading indicator while the user data is being fetched
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
@@ -126,7 +113,6 @@ fun EditProfile(
                     NavigateBackArrow(popBack)
 
                     Column(
-//                modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(
                             8.dp,
@@ -135,9 +121,7 @@ fun EditProfile(
                     ) {
                         Spacer(Modifier.height(40.dp))
                         Text(
-                            text = "Please update some details to continue",
-
-                            // Title/H4 (Bold)
+                            text = stringResource(R.string.edit_default_label),
                             style = TextStyle(
                                 fontSize = 20.sp,
                                 lineHeight = 30.sp,
@@ -171,8 +155,6 @@ fun EditProfile(
                                     weightState.text,
                                     user?.weight!!,
                                     user?.previousWeights!!,
-                                    coroutineScope
-
                                 )
                             }) {
                             Column(
@@ -183,7 +165,7 @@ fun EditProfile(
                             ) {
                                 Text(
                                     fontSize = 14.sp,
-                                    text = "Continue",
+                                    text = stringResource(R.string.continue_label),
                                     modifier = Modifier.width(100.dp),
                                     textAlign = TextAlign.Center,
                                     maxLines = 1
@@ -195,9 +177,8 @@ fun EditProfile(
                 }
             }
         } ?: run {
-            // Handle the case where user data is null
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "User not found")
+                Text(text = stringResource(R.string.not_found))
             }
         }
     }
@@ -210,7 +191,6 @@ private fun Context.doEdit(
     newWeight: String,
     oldWeight: Double,
     previousWeightList: List<Double>,
-    coroutineScope: CoroutineScope
 ) {
 
     val newWeightList = previousWeightList.toMutableList()

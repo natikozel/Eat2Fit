@@ -23,11 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.finalproj.R
 import com.example.finalproj.components.Eat2FitButton
 import com.example.finalproj.components.Email
 import com.example.finalproj.components.GenericText
@@ -36,11 +38,10 @@ import com.example.finalproj.components.Password
 import com.example.finalproj.database.AuthenticationManager
 import com.example.finalproj.database.DatabaseManager
 import com.example.finalproj.database.models.User
-import com.example.finalproj.ui.theme.Primary
 import com.example.finalproj.util.validation.ConfirmPasswordState
 import com.example.finalproj.util.validation.EmailState
 import com.example.finalproj.util.validation.PasswordState
-import com.example.finalproj.util.validation.TextState
+import com.example.finalproj.util.validation.DropDownState
 
 @Composable
 fun Signup(popBack: () -> Boolean) {
@@ -57,7 +58,7 @@ fun Signup(popBack: () -> Boolean) {
         ConfirmPasswordState(passwordState = passwordState)
     }
     val fullNameTextState = remember {
-        TextState()
+        DropDownState()
     }
 
     fun validateInput() {
@@ -101,10 +102,9 @@ fun Signup(popBack: () -> Boolean) {
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = "Sign up",
+                    text = stringResource(R.string.sign_up),
                     modifier = Modifier.fillMaxWidth(),
                     fontSize = 39.sp,
-                    color = Primary,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -117,7 +117,7 @@ fun Signup(popBack: () -> Boolean) {
                 GenericText(
                     textState = fullNameTextState,
                     isOutlined = true,
-                    label = "Full Name",
+                    label = stringResource(R.string.full_name),
                     icon = Icons.Default.Person
                 )
 
@@ -129,7 +129,7 @@ fun Signup(popBack: () -> Boolean) {
 
 
                 Password(
-                    label = "Confirm Password",
+                    label = stringResource(R.string.confirm_password),
                     passwordState = confirmPasswordState,
                     isOutlined = true,
                     onImeAction = {
@@ -149,7 +149,7 @@ fun Signup(popBack: () -> Boolean) {
                 {
                     Text(
                         fontSize = 20.sp,
-                        text = "Sign up",
+                        text = stringResource(R.string.sign_up),
                         textAlign = TextAlign.Center,
                         maxLines = 1
                     )
@@ -175,12 +175,12 @@ private fun Context.submitRequest(
                 fullName = fullName
             ))
 
-            Toast.makeText(this, "Successfully signed up", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.successfully_signed_up), Toast.LENGTH_SHORT).show()
             popBack()
 
         },
         onFailure = {
-            Toast.makeText(this, "Failed to sign up", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.failed_to_sign_up), Toast.LENGTH_SHORT).show()
         }
     )
 }

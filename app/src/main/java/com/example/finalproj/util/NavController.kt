@@ -10,6 +10,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.finalproj.views.AppSections
 
 object Destinations {
     const val LANDING = "landing" // landing
@@ -36,7 +37,6 @@ class Eat2FitNavController(
         get() = navController.currentDestination?.route
 
 
-    @SuppressLint("ResourceType")
     fun navigateAndClearStack(route: String) {
         if (route != currentRoute) {
 
@@ -72,13 +72,16 @@ class Eat2FitNavController(
     }
 }
 
+fun navigateToProfile(
+    navigateAndClear: (String) -> Unit
+): Boolean {
+    navigateAndClear(AppSections.PROFILE.route)
+    return true
+}
 
-private fun NavBackStackEntry.lifecycleIsResumed() =
-    this.lifecycle.currentState == Lifecycle.State.RESUMED
-
-private val NavGraph.startDestination: NavDestination?
-    get() = findNode(startDestinationId)
-
-private tailrec fun findStartDestination(graph: NavDestination): NavDestination {
-    return if (graph is NavGraph) findStartDestination(graph.startDestination!!) else graph
+fun navigateToHome(
+    navigateAndClear: (String) -> Unit
+): Boolean {
+    navigateAndClear(AppSections.HOME.route)
+    return true
 }

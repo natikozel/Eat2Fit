@@ -1,9 +1,7 @@
 package com.example.finalproj.database.models
 
-import com.google.firebase.database.IgnoreExtraProperties
-
 enum class ImageType {
-    THUMBNAIL, REGULAR
+    THUMBNAIL, REGULAR, LARGE
 }
 
 data class Recipe(

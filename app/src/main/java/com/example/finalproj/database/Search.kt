@@ -5,8 +5,7 @@ import com.example.finalproj.database.models.ImageType
 import com.example.finalproj.database.models.Ingredient
 import com.example.finalproj.database.models.Meal
 import com.example.finalproj.database.models.Recipe
-import com.example.finalproj.views.leftoverCalories
-import com.google.gson.JsonNull
+import com.example.finalproj.util.calculateCalories
 import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -72,7 +71,7 @@ object SearchAPI {
         },
         "fit": {
           "ENERC_KCAL": {
-            "min": 25,
+            "min": ${maxCal / 50},
             "max": ${maxCal / 30}
           }
         }
@@ -101,8 +100,8 @@ object SearchAPI {
         },
         "fit": {
           "ENERC_KCAL": {
-            "min": 50,
-            "max": ${(maxCal / 30) * 2}
+            "min": ${(maxCal / 40) * 2},
+            "max": ${(maxCal / 20) * 2}
           }
         }
       }
@@ -138,6 +137,11 @@ object SearchAPI {
                                     .getAsJsonObject("REGULAR").get("url").asString,
                                 ImageType.THUMBNAIL to recipeJson.getAsJsonObject("images")
                                     .getAsJsonObject("THUMBNAIL").get("url").asString,
+                                ImageType.LARGE to recipeJson.getAsJsonObject("images")
+                                    .takeIf { lg -> lg.has("LARGE") }
+                                    ?.getAsJsonObject("LARGE")
+                                    ?.get("url")
+                                    ?.asString
                             )
                             Log.d("SearchAPI", "Image URIs: $imageUris")
 
@@ -246,7 +250,7 @@ object SearchAPI {
         }
     }
 
-    suspend fun getMealPlan(currentCalories: Int, caloriesGap: Int): List<Recipe?>? =
+    private suspend fun getMealPlan(currentCalories: Int, caloriesGap: Int): List<Recipe?>? =
         withContext(Dispatchers.Default) {
             val url = URL("https://api.edamam.com/api/meal-planner/v1/0cd5e30a/select")
             val jsonBody = getJsonBody(currentCalories, caloriesGap)
@@ -288,7 +292,7 @@ object SearchAPI {
 
     suspend fun findSuggestedMeals() {
         val recipes = getMealPlan(
-            leftoverCalories(),
+            calculateCalories(),
             AuthenticationManager.getUser().maxCalories!!
         )
         recipes?.let {
@@ -297,7 +301,8 @@ object SearchAPI {
                     recipeUri = recipe?.recipeUri?.substringAfterLast("recipe_").toString(),
                     label = recipe?.label,
                     calories = recipe?.calories,
-                    imageUri = recipe?.imageUris?.firstOrNull { it.first == ImageType.REGULAR }?.second
+                    imageUri = recipe?.imageUris?.firstOrNull { it.first == ImageType.LARGE }?.second
+                        ?: recipe?.imageUris?.firstOrNull { it.first == ImageType.REGULAR }?.second
                 )
             }
             AuthenticationManager.getUser().suggestedMeals = suggestedMeals

@@ -3,15 +3,18 @@
     <string name="app_name">Eat2Fit</string>
     <string name="fileprovider">com.jerry.jetpack_take_select_photo_image.components.fileprovider</string>
 
+
     <!-- Home Destinations -->
     <string name="landing_destination">landing</string>
     <string name="welcome_destination">welcome</string>
     <string name="profile_destination">profile</string>
 
+
     <!-- Landing routes -->
     <string name="landing_main">main</string>
     <string name="landing_signup">signup</string>
     <string name="landing_forgot_password">forgot_password</string>
+
 
     <!-- Profile routes -->
     <string name="feed">home</string>
@@ -21,29 +24,145 @@
     <string name="profile">profile</string>
     <string name="profile_edit">myProfile/edit</string>
 
+
+    <!-- Profile strings -->
+    <string name="height">Height</string>
+    <string name="weight">Weight</string>
+    <string name="age">Age</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="log_out">Log out</string>
+    <string name="daily_progress">Daily progress</string>
+    <string name="my_calories">My calories</string>
+    <string name="user_goal">User Goal</string>
+    <string name="remaining_food">Remaining Food</string>
+    <string name="remaining">Remaining</string>
+    <string name="overeating">Overeating</string>
+    <string name="notifications_popup">Notification permission is required to show notifications.</string>
+    <string name="notification_label">Notification</string>
+    <string name="notifications_popup_label">Pop-up Notification</string>
+    <string name="icon_label">Icon Label</string>
+    <string name="edit_default_label">Please update some details to continue</string>
+    <string name="continue_label">Continue</string>
+
+
     <!-- Authentication -->
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="sign_up_label">SIGN UP</string>
+    <string name="forgotPassword_label">Forgot Password?</string>
+    <string name="sign_in_label">SIGN IN</string>
+    <string name="is_account_label">Don\'t have an account?</string>
+    <string name="not_found">User not found</string>
+    <string name="forgot_password_submission">Link for a new password was sent to the email</string>
+    <string name="forgot_password_welcome">No worries, that also happens. Please enter the email address associated with your account.</string>
+    <string name="sign_up">Sign up</string>
+    <string name="full_name">Full Name</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="successfully_signed_up">Successfully signed up</string>
+    <string name="failed_to_sign_up">Failed to sign up</string>
 
-    <!-- Resources -->
-    <string name="search_eat2fit">Search in Eat2Fit!</string>
+
+    <!-- FoodScreen strings -->
+    <string name="calories">Calories: %1$s</string>
+    <string name="barcode_fail">Barcode not found.\nPlease try again.</string>
+
+
+    <!-- Home strings -->
+    <string name="last_watched">Last watched</string>
+    <string name="suggested_bf">Suggested Breakfast</string>
+    <string name="suggested_lunch">Suggested Lunch</string>
+    <string name="meal_not_found">Could not find an appropriate meal for you</string>
+    <string name="no_meals_watched_recently">No meals watched recently</string>
+    <string name="unknown">Unknown</string>
+    <string name="search_for_a_meal">Search for a Meal</string>
+    <string name="scan_a_product">Scan a Product</string>
+    <string name="all">All</string>
+    <string name="quiz">Quiz</string>
+    <string name="take_a_quiz">Take a quiz to test your knowledge</string>
+
+
+    <!-- MealsView strings -->
+    <string name="calories_text">Calories: %1$d cal</string>
+    <string name="delete_meal">Delete Meal</string>
+    <string name="meal_removed">Meal Removed</string>
+    <string name="meal_removed_message">The meal has been removed and your calorie count has been updated accordingly.</string>
+    <string name="mealsview_title">Today\'s meals</string>
+    <string name ="mealsview_error_title">You haven\'t eaten anything for today!</string>
+
+
+    <!-- RecipeDetail strings -->
+    <string name="ingredients">Ingredients</string>
+    <string name="recipe_details">Recipe Details</string>
+    <string name="meal_type">Meal Type</string>
+    <string name="total_calories">Total Calories</string>
+    <string name="total_weight">Total Weight</string>
+    <string name="grams">grams</string>
+    <string name="add_to_my_meals">Add to my meals!</string>
+    <string name="meal_added">Meal Added</string>
+    <string name="meal_added_message">The meal has been added to your meal tracking.</string>
+    <string name="no_recipe_found">No recipe found</string>
+
+
+    <!-- PermissionRequester strings -->
+    <string name="permission_required">Permission Required</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+
+    <!-- ProfileDetails strings -->
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="lose_weight">Lose Weight</string>
+    <string name="maintain_weight">Maintain Weight</string>
+    <string name="gain_weight">Gain Weight</string>
+    <string name="your_height">Your Height</string>
+    <string name="your_weight">Your Weight</string>
+
+
+    <!-- Questionnaire strings -->
+    <string name="choose_gender">Choose Gender</string>
+    <string name="your_goal">Your Goal</string>
+    <string name="logo_image">Logo Image</string>
+    <string name="complete_profile">Let’s complete your profile</string>
+    <string name="know_more_about_you">It will help us to know more about you!</string>
+    <string name="next">Next</string>
+
+
+    <!-- QuizView strings -->
+    <string name="nice_work">Nice Work</string>
+    <string name="wrong_answer">Wrong Answer</string>
+    <string name="play_again">Play Again</string>
+    <string name="try_again">Try Again</string>
+    <string name="quiz_description">The QUIZ IS BASED ON THE INFORMATION PAGES ON THIS APP.\n\nLET'S SEE HOW WELL YOU CAN REMEMBER WHAT YOU JUST READ</string>
+    <string name="time_10_sec">Time\n10 sec.</string>
+
+
+    <!-- SearchView strings -->
+    <string name="back">Back</string>
+    <string name="perform_search">Perform Search</string>
+    <string name="search_hint">Search for recipes in Eat2Fit!</string>
+    <string name="search_count">%1d items</string>
     <string name="search_no_matches">No matches for “%1s”</string>
     <string name="search_no_matches_retry">Try broadening your search</string>
-    <string name="search_count">%1d items</string>
-    <string name="label_search">Perform search</string>
 
-    <string name="no_recipe_found">No recipe found</string>
+
+    <!-- Resources -->
+    <string name="Log_TAG">"Eat2FitAppTAG"</string>
+    <string name="FCM_FAIL">"Fetching FCM registration token failed"</string>
+    <string name="unknown_error">Unknown Error</string>
+    <string name="submit">Submit</string>
+    <string name="search_eat2fit">Search in Eat2Fit!</string>
+    <string name="label_search">Perform search</string>
     <string name="welcome_to_your">Welcome to your</string>
     <string name="eat2fit">Eat2Fit</string>
     <string name="dietary_journey">Dietary Journey</string>
     <string name="get_started">Get Started</string>
-    <string name="logo_image">Logo Image</string>
-    <string name="back">Back</string>
     <string name="search_in_eat2fit">Search in Eat2Fit!</string>
-    <string name="calories">Calories: %1$.2f</string>
-    <string name="ingredients">Ingredients:</string>
     <string name="main">main</string>
     <string name="signup">signup</string>
     <string name="forgot_password">forgot_password</string>
+
+
 
 </resources>

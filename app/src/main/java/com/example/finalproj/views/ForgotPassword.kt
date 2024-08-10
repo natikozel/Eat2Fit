@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -28,17 +29,27 @@ import com.example.finalproj.R
 import com.example.finalproj.components.Eat2FitButton
 import com.example.finalproj.components.Email
 import com.example.finalproj.components.NavigateBackArrow
-import com.example.finalproj.ui.theme.Primary
-import com.example.finalproj.ui.theme.Tertirary
+import com.example.finalproj.database.AuthenticationManager
 import com.example.finalproj.util.validation.EmailState
 
 @Composable
 fun ForgotPassword(popBack: () -> Boolean) {
     val context = LocalContext.current
+    val emailState = remember {
+        EmailState()
+    }
+
+
+    fun validateInput(email: String) {
+        if (emailState.isValid) {
+            context.submitRequest(emailState.text)
+        }
+    }
 
 
     Surface(
-        Modifier.padding(top = 20.dp, start = 20.dp, end = 20.dp)
+        Modifier
+            .padding(top = 20.dp, start = 20.dp, end = 20.dp)
             .fillMaxSize()
             .navigationBarsPadding(), color = Color.White
     ) {
@@ -55,29 +66,25 @@ fun ForgotPassword(popBack: () -> Boolean) {
 
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    text = "Forgot Password?",
+                    text = stringResource(R.string.forgotPassword_label),
                     modifier = Modifier.fillMaxWidth(),
                     fontFamily = FontFamily(Font(R.font.karla_bold)),
                     fontSize = 39.sp,
-                    color = Primary,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "No worries, that also happens.\nPlease enter the email address associated with your account.", color = Tertirary, fontFamily = FontFamily(Font(R.font.karla_bold)),
+                    text = stringResource(R.string.forgot_password_welcome), fontFamily = FontFamily(Font(R.font.karla_bold)),
                 )
 
 
-                val emailState = remember {
-                    EmailState()
-                }
                 Email(
                     emailState = emailState,
-                    onImeAction = {context.submitRequest()},
+                    onImeAction = {validateInput(emailState.text)},
                     isOutlined = true
                 )
 
-                Eat2FitButton(onClick = {context.submitRequest()}) {
-                    Text(text = "Submit")
+                Eat2FitButton(onClick = {validateInput(emailState.text)}, enabled = emailState.isValid) {
+                    Text(text = stringResource(R.string.submit))
                 }
                 Box(
                     modifier = Modifier
@@ -93,6 +100,7 @@ fun ForgotPassword(popBack: () -> Boolean) {
     }
 }
 
-private fun Context.submitRequest() {
-    Toast.makeText(this, "Password was sent to the email", Toast.LENGTH_SHORT).show()
+private fun Context.submitRequest(email: String) {
+    AuthenticationManager.getAuth().sendPasswordResetEmail(email)
+    Toast.makeText(this, getString(R.string.forgot_password_submission), Toast.LENGTH_SHORT).show()
 }

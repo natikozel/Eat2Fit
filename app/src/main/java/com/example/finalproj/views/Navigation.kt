@@ -21,6 +21,7 @@ import com.example.finalproj.util.Destinations.PROFILE
 import com.example.finalproj.util.Destinations.RECIPE_URI_KEY
 import com.example.finalproj.util.Destinations.WELCOME
 import com.example.finalproj.util.InformationPageManager
+import com.example.finalproj.util.navigateToProfile
 import com.example.finalproj.util.rememberEat2FitNavController
 
 
@@ -49,22 +50,21 @@ private fun NavGraphBuilder.eat2FitNavGraph(
 
     navigation(
         route = LANDING,
-        startDestination = LandingSections.MAIN.route // landing
+        startDestination = LandingSections.MAIN.route
     ) {
         addLandingGraph(onNavigateToRoute, popBack, navigateAndClear)
     }
 
     navigation(
         route = PROFILE,
-        startDestination = AppSections.PROFILE.route // profile
-//        startDestination = "${AppSections.HOME.route}/quiz/question" // profile
+        startDestination = AppSections.PROFILE.route
     ) {
         addAppGraph(onNavigateToRoute, popBack, navigateAndClear)
     }
 
     navigation(
         route = WELCOME,
-        startDestination = WelcomeSections.WELCOME.route // welcome
+        startDestination = WelcomeSections.WELCOME.route
     ) {
         addWelcomeGraph(onNavigateToRoute, popBack)
     }
@@ -78,7 +78,7 @@ private fun NavGraphBuilder.eat2FitNavGraph(
         }
         val arguments = requireNotNull(backStackEntry.arguments)
         val barcode = arguments.getString(BARCODE_KEY)
-        FoodDetailsScreen(barcode!!, navigateAndClear = navigateAndClear)
+        BarcodeScanResultScreen(barcode!!, navigateAndClear = navigateAndClear)
     }
     composable(
         "${AppSections.SEARCH.route}/{${RECIPE_URI_KEY}}",
@@ -108,6 +108,11 @@ private fun NavGraphBuilder.eat2FitNavGraph(
         "${AppSections.HOME.route}/quiz/result/{${IS_CORRECT_KEY}}",
         enterTransition = { slideIntoContainer() },
     ) { backStackEntry ->
+
+        BackHandler {
+            // pass
+        }
+
         val isCorrect = backStackEntry.arguments?.getString("isCorrect")?.toBoolean() ?: false
         QuizResultScreen(
             isCorrect = isCorrect,

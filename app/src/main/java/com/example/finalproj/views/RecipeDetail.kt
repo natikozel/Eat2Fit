@@ -1,12 +1,10 @@
 package com.example.finalproj.views
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -31,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.finalproj.R
-import com.example.finalproj.components.BottomNavigationMenu
 import com.example.finalproj.components.Eat2FitButton
 import com.example.finalproj.components.Eat2FitScaffold
 import com.example.finalproj.components.HeaderLogo
@@ -42,24 +40,9 @@ import com.example.finalproj.database.models.Recipe
 import com.example.finalproj.database.SearchAPI
 import com.example.finalproj.database.models.Meal
 import com.example.finalproj.ui.theme.Eat2FitTheme
+import com.example.finalproj.util.roundToHalf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
-
-
-@SuppressLint("DefaultLocale")
-fun roundToHalf(value: Any): Any {
-    val floatValue = when (value) {
-        is Number -> value.toFloat()
-        else -> throw IllegalArgumentException("Input must be a Number or Float")
-    }
-    val roundedValue = (floatValue * 12).roundToInt() / 12.0
-    return if (roundedValue % 1.0 == 0.0) {
-        roundedValue.toInt()
-    } else {
-        String.format("%.2f", roundedValue).toFloat()
-    }
-}
 
 
 enum class RecipeDisplay {
@@ -76,7 +59,6 @@ class RecipeState(
     var fetching by mutableStateOf(fetching)
     val recipeDisplay: RecipeDisplay
         get() = when {
-
             recipe != null -> RecipeDisplay.Results
             fetching -> RecipeDisplay.Fetching
             else -> RecipeDisplay.NoResults
@@ -139,7 +121,7 @@ fun RecipeDetail(
                     item {
                         Spacer(Modifier.height(90.dp))
                         Text(
-                            text = "No recipe found",
+                            text = stringResource(R.string.no_recipe_found),
                             style = MaterialTheme.typography.titleLarge,
                             color = Eat2FitTheme.colors.textPrimary,
                             modifier = Modifier
@@ -196,7 +178,8 @@ fun RecipeDetail(
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
                                     .data(
-                                        recipeState.recipe?.imageUris?.firstOrNull { it.first == ImageType.REGULAR }?.second
+                                        recipeState.recipe?.imageUris?.firstOrNull { it.first == ImageType.LARGE }?.second
+                                            ?: recipeState.recipe?.imageUris?.firstOrNull { it.first == ImageType.REGULAR }?.second
                                             ?: ""
                                     )
                                     .crossfade(true)
@@ -204,17 +187,16 @@ fun RecipeDetail(
                                 contentDescription = null,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(200.dp)
+                                    .height(400.dp)
                             )
 
 
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Ingredients",
+                                text = stringResource(R.string.ingredients),
                                 style = TextStyle(
                                     fontSize = 24.sp,
                                     lineHeight = 24.sp,
-//                                fontFamily = FontFamily(Font(R.font.karla_bold)),
                                     fontWeight = FontWeight.Bold,
                                     color = Color(0xFF010101),
                                 ),
@@ -233,7 +215,6 @@ fun RecipeDetail(
                                         style = TextStyle(
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
-//                                        fontFamily = FontFamily(Font(R.font.karla_bold)),
                                             color = Color(0xFF1D1617),
                                         ),
                                     )
@@ -251,11 +232,10 @@ fun RecipeDetail(
                             }
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(
-                                    text = "Recipe Details",
+                                    text = stringResource(R.string.recipe_details),
                                     style = TextStyle(
                                         fontSize = 24.sp,
                                         lineHeight = 24.sp,
-//                                    fontFamily = FontFamily(Font(R.font.karla_bold)),
                                         fontWeight = FontWeight.Bold,
                                         color = Color(0xFF010101),
                                     ),
@@ -267,20 +247,19 @@ fun RecipeDetail(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "Meal Type",
+                                        text = stringResource(R.string.meal_type),
                                         style = TextStyle(
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
-//                                        fontFamily = FontFamily(Font(R.font.karla_bold)),
                                             color = Color(0xFF1D1617),
                                         ),
                                     )
                                     Text(
-                                        text = recipeState.recipe?.mealType ?: "Unknown",
+                                        text = recipeState.recipe?.mealType
+                                            ?: stringResource(R.string.unknown),
                                         style = TextStyle(
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
-//                                        fontFamily = FontFamily(Font(R.font.karla_bold)),
                                             color = Color(0xFF1D1617),
                                         ),
                                     )
@@ -292,11 +271,10 @@ fun RecipeDetail(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "Total Calories",
+                                        text = stringResource(R.string.total_calories),
                                         style = TextStyle(
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
-//                                        fontFamily = FontFamily(Font(R.font.karla_bold)),
                                             color = Color(0xFF1D1617),
                                         ),
                                     )
@@ -305,7 +283,6 @@ fun RecipeDetail(
                                         style = TextStyle(
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
-//                                        fontFamily = FontFamily(Font(R.font.karla_bold)),
                                             color = Color(0xFF1D1617),
                                         ),
                                     )
@@ -315,20 +292,22 @@ fun RecipeDetail(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "Total Weight",
+                                        text = stringResource(R.string.total_weight),
                                         style = TextStyle(
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
-//                                        fontFamily = FontFamily(Font(R.font.karla_bold)),
                                             color = Color(0xFF1D1617),
                                         ),
                                     )
                                     Text(
-                                        text = "${roundToHalf(recipeState.recipe?.totalWeight!!)} grams",
+                                        text = "${roundToHalf(recipeState.recipe?.totalWeight!!)} ${
+                                            stringResource(
+                                                R.string.grams
+                                            )
+                                        }",
                                         style = TextStyle(
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
-//                                        fontFamily = FontFamily(Font(R.font.karla_bold)),
                                             color = Color(0xFF1D1617),
                                         ),
                                     )
@@ -345,7 +324,7 @@ fun RecipeDetail(
                                         }
                                     }) {
                                     Text(
-                                        text = "Add to my meals!",
+                                        text = stringResource(R.string.add_to_my_meals),
                                         modifier = Modifier.fillMaxWidth(),
                                         textAlign = TextAlign.Center,
                                         maxLines = 1
@@ -366,7 +345,7 @@ fun MealAddedPopup(onDismiss: () -> Unit, onNavigateToRoute: (String) -> Unit) {
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Meal Added",
+                text = stringResource(R.string.meal_added),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.fillMaxWidth(),
@@ -374,7 +353,7 @@ fun MealAddedPopup(onDismiss: () -> Unit, onNavigateToRoute: (String) -> Unit) {
             )
         },
         text = {
-            Text(text = "The meal has been added to your meal tracking.")
+            Text(text = stringResource(R.string.meal_added_message))
         },
         confirmButton = {
             Eat2FitButton(
@@ -383,7 +362,11 @@ fun MealAddedPopup(onDismiss: () -> Unit, onNavigateToRoute: (String) -> Unit) {
                     onDismiss()
                     onNavigateToRoute(AppSections.MEALS.route)
                 }) {
-                Text("Continue", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                Text(
+                    stringResource(R.string.continue_label),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
             }
         }
     )

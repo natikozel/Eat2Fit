@@ -1,7 +1,6 @@
 package com.example.finalproj.views
 
 import androidx.activity.compose.BackHandler
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +17,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -54,11 +54,7 @@ fun NavGraphBuilder.addWelcomeGraph(
         BackHandler(true) {
             // pass
         }
-
-        WelcomePage(
-            onNavigateToRoute = onNavigateToRoute,
-            popBack = popBack
-        )
+        WelcomePage(onNavigateToRoute = onNavigateToRoute,)
     }
     composable(
         WelcomeSections.QUESTIONNAIRE.route,
@@ -76,7 +72,6 @@ fun NavGraphBuilder.addWelcomeGraph(
 @Composable
 fun WelcomePage(
     onNavigateToRoute: (String) -> Unit,
-    popBack: () -> Boolean,
     modifier: Modifier = Modifier,
     elevation: Dp = 0.dp
 ) {
@@ -94,15 +89,14 @@ fun WelcomePage(
 
             Image(
                 modifier = Modifier
-//                    .fillMaxSize()
                     .size(width = 300.dp, height = 300.dp),
                 painter = painterResource(id = R.drawable.logo),
-                contentDescription = "Logo Image",
+                contentDescription = stringResource(R.string.logo_image),
                 contentScale = ContentScale.FillBounds
             )
             Spacer(Modifier.height(32.dp))
             Text(
-                text = "Welcome to your",
+                text = stringResource(R.string.welcome_to_your),
                 style = TextStyle(
                     fontSize = 24.sp,
                     fontFamily = FontFamily(Font(R.font.karla_bold)),
@@ -113,7 +107,7 @@ fun WelcomePage(
             )
             Spacer(Modifier.height(14.dp))
             Text(
-                text = "Eat2Fit",
+                text = stringResource(R.string.eat2fit),
                 style = TextStyle(
                     fontSize = 40.sp,
                     fontFamily = FontFamily(Font(R.font.karla_bold)),
@@ -123,7 +117,7 @@ fun WelcomePage(
                 )
             )
             Text(
-                text = "Dietary Journey",
+                text = stringResource(R.string.dietary_journey),
                 style = TextStyle(
                     fontSize = 40.sp,
                     fontFamily = FontFamily(Font(R.font.karla_bold)),
@@ -152,7 +146,7 @@ fun WelcomePage(
                 ) {
                     Text(
                         fontSize = 20.sp,
-                        text = "Get Started",
+                        text = stringResource(R.string.get_started),
                         textAlign = TextAlign.Center,
                         maxLines = 1
                     )

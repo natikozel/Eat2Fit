@@ -1,6 +1,5 @@
 package com.example.finalproj.views
 
-import android.provider.CalendarContract.Colors
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,21 +34,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.finalproj.Eat2Fit
 import com.example.finalproj.R
 import com.example.finalproj.components.Eat2FitButton
 import com.example.finalproj.components.Eat2FitScaffold
 import com.example.finalproj.components.Eat2FitSurface
 import com.example.finalproj.components.HeaderLogo
 import com.example.finalproj.components.NavigateBackArrow
-import com.example.finalproj.database.models.Question
 import com.example.finalproj.database.models.QuizQuestions
 import com.example.finalproj.ui.theme.Eat2FitTheme
 import com.example.finalproj.util.icons.rememberTimer
+import com.example.finalproj.util.navigateToHome
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -100,14 +99,14 @@ fun QuizIntroductionScreen(popBack: () -> Boolean, navigateToQuiz: () -> Unit) {
                     ) {
                         Text(
                             color = Eat2FitTheme.colors.lightGreen,
-                            text = "QUIZ",
+                            text = stringResource(R.string.quiz),
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.align(Alignment.CenterHorizontally)
                         )
                         Text(
                             color = Color.Gray,
-                            text = "The QUIZ IS BASED ON THE INFORMATION PAGES ON THIS APP.\n\nLET'S SEE HOW WELL YOU CAN REMEMBER WHAT YOU JUST READ",
+                            text = stringResource(R.string.quiz_description),
                             fontSize = 16.sp,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -121,7 +120,7 @@ fun QuizIntroductionScreen(popBack: () -> Boolean, navigateToQuiz: () -> Unit) {
                                 contentDescription = null
                             )
                             Text(
-                                text = "Time\n10 sec.",
+                                text = stringResource(R.string.time_10_sec),
                                 fontSize = 16.sp,
                                 textAlign = TextAlign.Center,
                                 fontWeight = FontWeight.Bold
@@ -163,7 +162,7 @@ fun QuizQuestionScreen(
         val interval = 20L
         var elapsedTime = 0L
 
-        while (elapsedTime < totalTime) {
+        while ((elapsedTime < totalTime) && !isAnswered) {
             delay(interval)
             elapsedTime += interval
             withContext(Dispatchers.Main) {
@@ -303,7 +302,9 @@ fun QuizResultScreen(
                     ) {
                         Text(
                             color = if (isCorrect) Eat2FitTheme.colors.lightGreen else Eat2FitTheme.colors.red,
-                            text = if (isCorrect) "Nice Work" else "Wrong Answer",
+                            text = if (isCorrect) stringResource(R.string.nice_work) else stringResource(
+                                R.string.wrong_answer
+                            ),
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -325,8 +326,9 @@ fun QuizResultScreen(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = if (isCorrect) "Play Again" else "Try Again",
-                        modifier = Modifier.fillMaxWidth(),
+                        text = if (isCorrect) stringResource(R.string.play_again) else stringResource(
+                            R.string.try_again
+                        ), modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
                 }

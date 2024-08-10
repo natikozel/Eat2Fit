@@ -25,13 +25,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import com.example.finalproj.ui.theme.Shapes
-import com.example.finalproj.util.icons.rememberTransgender
-import com.example.finalproj.util.validation.TextState
+import com.example.finalproj.util.validation.DropDownState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DropDownMenu(
-    textState: TextFieldState = remember { TextState() },
+    textState: TextFieldState = remember { DropDownState() },
     options: List<String>,
     icon: ImageVector,
     imeAction: ImeAction = ImeAction.Next,

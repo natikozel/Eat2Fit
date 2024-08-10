@@ -3,15 +3,10 @@ package com.example.finalproj.views
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,35 +22,27 @@ import com.example.finalproj.components.HeaderLogo
 import com.example.finalproj.components.NavigateBackArrow
 import com.example.finalproj.database.models.FoodViewModel
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.finalproj.components.Eat2FitScaffold
-import com.example.finalproj.components.Eat2FitSurface
-import com.example.finalproj.components.HeaderLogo
-import com.example.finalproj.components.NavigateBackArrow
 import com.example.finalproj.database.models.FoodDetails
 import com.example.finalproj.R
-import com.example.finalproj.ui.theme.Eat2FitTheme
+import com.example.finalproj.components.LoadingComposable
+import com.example.finalproj.util.navigateToProfile
 
 @Composable
-fun FoodDetailsScreen(
+fun BarcodeScanResultScreen(
     barcode: String,
     viewModel: FoodViewModel = viewModel(),
     navigateAndClear: (String) -> Unit
@@ -90,8 +77,8 @@ fun FoodDetailsScreen(
                     LoadingComposable()
                 } else {
                     foodDetails?.let {
-                        FoodDetailsComposable(it)
-                    } ?: NoResultComposable()
+                        FoodDetails(it)
+                    } ?: NoResults()
                 }
             }
         }
@@ -99,7 +86,7 @@ fun FoodDetailsScreen(
 }
 
 @Composable
-fun FoodDetailsComposable(foodDetails: FoodDetails) {
+fun FoodDetails(foodDetails: FoodDetails) {
 
     val context = LocalContext.current
 
@@ -160,7 +147,7 @@ fun FoodDetailsComposable(foodDetails: FoodDetails) {
 }
 
 @Composable
-fun NoResultComposable() {
+fun NoResults() {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(40.dp, alignment = Alignment.CenterVertically),
@@ -168,7 +155,7 @@ fun NoResultComposable() {
 
     ) {
         Text(
-            text = "Barcode not found.\nPlease try again.",
+            text = stringResource(R.string.barcode_fail),
             fontSize = 18.sp,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
@@ -200,16 +187,5 @@ fun NoResultComposable() {
                     .clip(RoundedCornerShape(8.dp))
             )
         }
-    }
-}
-
-@Composable
-fun LoadingComposable() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        CircularProgressIndicator()
     }
 }

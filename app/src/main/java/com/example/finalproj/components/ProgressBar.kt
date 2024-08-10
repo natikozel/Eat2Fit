@@ -21,12 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.finalproj.database.models.Goal
 import com.example.finalproj.ui.theme.Eat2FitTheme
 import com.example.finalproj.views.roundToHalf
 
 @Composable
 fun CircularDeterminateIndicator(
-    progress : Float, currentCalories : String, availableCalories : String, modifier : Modifier = Modifier
+    progress : Float, currentCalories : String, availableCalories : String, modifier : Modifier = Modifier, userGoal : Goal
 ) {
     val animatedProgress by animateFloatAsState(
         targetValue = progress/100 ,
@@ -54,7 +55,7 @@ fun CircularDeterminateIndicator(
         )
 
         val color =
-            if (progress >= 90) {
+            if (progress >= 90 && userGoal != Goal.GAIN) {
                 Eat2FitTheme.colors.red
             } else {
                 Eat2FitTheme.colors.lightGreen

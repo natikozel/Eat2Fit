@@ -35,9 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
-import coil.request.ImageRequest
 import com.example.finalproj.R
 import com.example.finalproj.components.BottomNavigationMenu
 import com.example.finalproj.components.Eat2FitButton
@@ -47,7 +45,6 @@ import com.example.finalproj.components.Eat2FitSurface
 import com.example.finalproj.components.HeaderLogo
 import com.example.finalproj.database.AuthenticationManager
 import com.example.finalproj.database.SearchAPI
-import com.example.finalproj.database.models.ImageType
 import com.example.finalproj.database.models.Meal
 import com.example.finalproj.ui.theme.Eat2FitTheme
 import com.example.finalproj.util.InformationPage
@@ -55,6 +52,10 @@ import com.example.finalproj.util.InformationPageManager
 import com.example.finalproj.util.fetchRecentMeal
 import com.example.finalproj.util.icons.rememberBarcodeScanner
 import com.example.finalproj.util.loadImageWithRetry
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.ui.res.stringResource
+import com.example.finalproj.util.roundToHalf
 
 enum class TabSections() {
     INFORMATION_PAGES, QUIZ
@@ -68,31 +69,16 @@ fun HomePage(
 ) {
 
 
-//    val suggestedMeal = AuthenticationManager.getUser().suggestedMeals?.get(0)
-    val suggestedMeal =
-        remember { mutableStateOf<Meal?>(AuthenticationManager.getUser().suggestedMeals?.get(0)) }
+    val suggestedMeals =
+        remember { mutableStateOf(AuthenticationManager.getUser().suggestedMeals) }
     val isFetchingSuggestedMeal = remember { mutableStateOf(true) }
-//    val suggestedMealUri = remember { mutableStateOf("") }
     val selectedTab = remember { mutableStateOf(TabSections.INFORMATION_PAGES) }
 
-    LaunchedEffect(suggestedMeal) {
+    LaunchedEffect(suggestedMeals) {
 
         isFetchingSuggestedMeal.value = true
         SearchAPI.findSuggestedMeals()
-
-//        val recipe = SearchAPI.getMealPlan(
-//            leftoverCalories(),
-//            AuthenticationManager.getUser().maxCalories!!
-//        )?.get(1)
-//        recipe?.let {
-//            suggestedMeal.value = Meal(
-//                label = recipe.label,
-//                calories = recipe.calories,
-//                imageUri = recipe.imageUris?.firstOrNull { it.first == ImageType.REGULAR }?.second
-//            )
-//            suggestedMealUri.value = recipe.recipeUri?.substringAfterLast("recipe_").toString()
-//        }
-        suggestedMeal.value = AuthenticationManager.getUser().suggestedMeals?.get(0)
+        suggestedMeals.value = AuthenticationManager.getUser().suggestedMeals
         isFetchingSuggestedMeal.value = false
 
     }
@@ -124,15 +110,11 @@ fun HomePage(
 
             ) {
 //                recentMeal.value?.let {
-                RecentProducts_Section(
-                    navigateAndClear,
-                    onNavigateToRoute
-                )
+                RecentProducts_Section(navigateAndClear)
                 SuggestedMealSection(
-                    suggestedMeal.value,
+                    suggestedMeals.value,
                     isFetchingSuggestedMeal.value,
                     onNavigateToRoute,
-                    suggestedMeal.value?.recipeUri!!
                 )
                 InformationPagesQuizSection(
                     selectedTab,
@@ -146,10 +128,8 @@ fun HomePage(
 
 @Composable
 fun RecentProducts_Section(
-    navigateAndClear: (String) -> Unit,
     onNavigateToRoute: (String) -> Unit,
     recentMeal: Meal? = AuthenticationManager.getUser().recentMeal,
-
     ) {
 
     val context = LocalContext.current
@@ -164,13 +144,25 @@ fun RecentProducts_Section(
     ) {
         item {
             Column(
+                modifier = Modifier.clickable {
+                    if (recentMeal != null) {
+                        onNavigateToRoute(
+                            "${AppSections.SEARCH.route}/${
+                                recentMeal.recipeUri?.substringAfterLast(
+                                    "recipe_"
+                                )
+                            }"
+                        )
+                    }
+                },
+
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(
                     8.dp,
                     alignment = Alignment.CenterVertically
                 )
             ) {
-                Text(text = "Recent Meal", fontSize = 26.sp, fontWeight = FontWeight.Bold)
+                Text(text = stringResource(R.string.last_watched), fontSize = 26.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(8.dp))
                 if (loadingState.value) {
                     CircularProgressIndicator()
@@ -184,7 +176,7 @@ fun RecentProducts_Section(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "No meals watched recently",
+                            text = stringResource(R.string.no_meals_watched_recently),
                             fontSize = 18.sp,
                             textAlign = TextAlign.Center
                         )
@@ -205,12 +197,13 @@ fun RecentProducts_Section(
                         ),
                         contentDescription = null,
                         modifier = Modifier
-                            .size(width = 200.dp, height = 200.dp),
+                            .size(width = 200.dp, height = 200.dp)
+                            .clip(RoundedCornerShape(50.dp)),
                         loading = { CircularProgressIndicator() },
                     )
                     Text(
                         modifier = Modifier.width(250.dp),
-                        text = recentMeal.label ?: "Unknown",
+                        text = recentMeal.label ?: stringResource(R.string.unknown),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         maxLines = 3,
@@ -238,7 +231,7 @@ fun RecentProducts_Section(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Search for a Meal",
+                        text = stringResource(R.string.search_for_a_meal),
                         fontSize = 14.sp
                     )
                 }
@@ -264,7 +257,7 @@ fun RecentProducts_Section(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Scan a Product",
+                        text = stringResource(R.string.scan_a_product),
                         fontSize = 14.sp
                     )
                 }
@@ -276,103 +269,121 @@ fun RecentProducts_Section(
 
 @Composable
 fun SuggestedMealSection(
-    suggestedMeal: Meal? = null,
+    suggestedMeals: List<Meal?>? = null,
     isFetching: Boolean,
     onNavigateToRoute: (String) -> Unit,
-    suggestedMealUri: String
 ) {
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val loadingState = remember { mutableStateOf(false) }
 
-    Column(
+
+    Box(
         modifier = Modifier
-            .padding(top = 15.dp, bottom = 5.dp)
             .fillMaxWidth()
+            .padding(20.dp)
     ) {
-        Text(
-            text = "Suggested Meal",
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        when {
-            isFetching -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp)
-                        .background(Color.LightGray, RoundedCornerShape(8.dp))
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
+        LazyRow(
 
-            suggestedMeal == null -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp)
-                        .background(Color.LightGray, RoundedCornerShape(8.dp))
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Couldn't find an appropriate meal for you",
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-
-            else -> {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White, RoundedCornerShape(8.dp))
-                        .padding(16.dp)
-                        .clickable {
-                            onNavigateToRoute("${AppSections.SEARCH.route}/$suggestedMealUri")
-                        }
-                ) {
-                    SubcomposeAsyncImage(
-                        model = loadImageWithRetry(
-                            context = context,
-                            imageUri = suggestedMeal.imageUri!!,
-                            onError = {
-                                fetchRecentMeal(
-                                    coroutineScope,
-                                    suggestedMeal,
-                                    loadingState,
-                                    isSuggestedMeal = true
-                                )
-                            }
-                        ),
-                        contentDescription = null,
+            horizontalArrangement = Arrangement.spacedBy(40.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            suggestedMeals?.let { meals ->
+                itemsIndexed(meals.toList()) { index, curMeal ->
+                    Column(
                         modifier = Modifier
-                            .size(width = 200.dp, height = 200.dp),
-                        loading = { CircularProgressIndicator() },
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = suggestedMeal.label!!,
-                        modifier = Modifier.fillMaxWidth(),
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Calories: ${roundToHalf(suggestedMeal.calories!!)}",
-                        fontSize = 16.sp,
-                        color = Color.Gray
-                    )
+                            .size(420.dp, 600.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = if (index == 0) stringResource(R.string.suggested_bf) else stringResource(R.string.suggested_lunch),
+                            fontSize = 26.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        when {
+                            isFetching || loadingState.value -> {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(250.dp)
+                                        .background(Color.White, RoundedCornerShape(8.dp))
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+
+                            curMeal == null -> {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(250.dp)
+                                        .background(Color.White, RoundedCornerShape(8.dp))
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.meal_not_found),
+                                        fontSize = 18.sp,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+
+                            else -> {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color.White, RoundedCornerShape(8.dp))
+                                        .clickable {
+                                            onNavigateToRoute("${AppSections.SEARCH.route}/${curMeal.recipeUri}")
+                                        }
+                                ) {
+                                    SubcomposeAsyncImage(
+                                        model = loadImageWithRetry(
+                                            context = context,
+                                            imageUri = curMeal.imageUri!!,
+                                            onError = {
+                                                fetchRecentMeal(
+                                                    coroutineScope,
+                                                    curMeal,
+                                                    loadingState,
+                                                    isSuggestedMeal = true
+                                                )
+                                            }
+                                        ),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(width = 400.dp, height = 400.dp)
+                                            .clip(RoundedCornerShape(50.dp)),
+                                        loading = { CircularProgressIndicator() },
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = curMeal.label!!,
+                                        modifier = Modifier.width(400.dp),
+                                        fontSize = 20.sp,
+                                        textAlign = TextAlign.Center,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 3,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = stringResource(R.string.calories, roundToHalf(curMeal.calories!!)),
+                                        fontSize = 16.sp,
+                                        color = Color.Gray
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -387,6 +398,8 @@ fun InformationPagesQuizSection(
     onInformationPageClick: (String) -> Unit
 
 ) {
+
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -403,7 +416,7 @@ fun InformationPagesQuizSection(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "All",
+                    text = stringResource(R.string.all),
                     fontWeight = if (selectedTab.value == TabSections.INFORMATION_PAGES) FontWeight.Bold else FontWeight.Normal,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
@@ -416,7 +429,7 @@ fun InformationPagesQuizSection(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Quiz",
+                    text = stringResource(R.string.quiz),
                     fontWeight = if (selectedTab.value == TabSections.QUIZ) FontWeight.Bold else FontWeight.Normal,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
@@ -425,7 +438,7 @@ fun InformationPagesQuizSection(
         }
 
         val columnHeight =
-            825.dp//if (selectedTab.value == TabSections.INFORMATION_PAGES) 800.dp else 200.dp
+            if (selectedTab.value == TabSections.INFORMATION_PAGES) 800.dp else 150.dp
 
         Spacer(modifier = Modifier.height(16.dp))
         Column(
@@ -527,13 +540,13 @@ fun QuizColumn(
             ) {
 
                 Text(
-                    text = "Quiz",
+                    text = stringResource(R.string.quiz),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Start
                 )
                 Text(
-                    text = "Take a quiz to test your knowledge",
+                    text = stringResource(R.string.take_a_quiz),
                     fontSize = 14.sp,
                     color = Color.Gray,
                     textAlign = TextAlign.Start

@@ -33,6 +33,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -43,7 +44,6 @@ import com.example.finalproj.components.Eat2FitSurface
 import com.example.finalproj.components.Email
 import com.example.finalproj.components.Password
 import com.example.finalproj.database.AuthenticationManager
-import com.example.finalproj.database.DatabaseKeys
 import com.example.finalproj.database.DatabaseManager
 import com.example.finalproj.database.models.User
 import com.example.finalproj.ui.theme.Eat2FitTheme
@@ -116,9 +116,9 @@ fun NavGraphBuilder.addLandingGraph(
 enum class LandingSections(
     val route: String
 ) {
-    MAIN("main"), // landing/main
-    SIGNUP("signup"), // landing/signup
-    FORGOT_PASSWORD("forgot_password"), // landing_forgot_password
+    MAIN("main"),
+    SIGNUP("signup"),
+    FORGOT_PASSWORD("forgot_password"),
 
 }
 
@@ -169,7 +169,7 @@ private fun Context.doLogin(
             onNavigateToRoute(Destinations.PROFILE)
         },
         onFailure = { exception ->
-            onError(exception.message ?: "Unknown error")
+            onError(exception.message ?: getString(R.string.unknown_error))
         }
     )
 }
@@ -254,7 +254,11 @@ fun Login(onNavigateToRoute: (String) -> Unit) {
             TextButton(onClick = {
                 onNavigateToRoute(LandingSections.FORGOT_PASSWORD.route)
             }) {
-                Text("Forgot Password?", color = Color.White, fontWeight = FontWeight.Bold)
+                Text(
+                    stringResource(R.string.forgotPassword_label),
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
             }
             Spacer(Modifier.height(10.dp))
 
@@ -274,7 +278,12 @@ fun Login(onNavigateToRoute: (String) -> Unit) {
                     contentColor = Color.Black,
                     disabledContainerColor = Eat2FitTheme.colors.emptyGreen
                 ),
-                content = { Text("SIGN IN", Modifier.padding(vertical = 8.dp)) }
+                content = {
+                    Text(
+                        stringResource(R.string.sign_in_label),
+                        Modifier.padding(vertical = 8.dp)
+                    )
+                }
             )
 
             Column(
@@ -285,11 +294,11 @@ fun Login(onNavigateToRoute: (String) -> Unit) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.End
                 ) {
-                    Text("Don't have an account?", color = Color.White)
+                    Text(stringResource(R.string.is_account_label), color = Color.White)
                     TextButton(onClick = {
                         onNavigateToRoute(LandingSections.SIGNUP.route)
                     }) {
-                        Text("SIGN UP", color = Color.White)
+                        Text(stringResource(R.string.sign_up_label), color = Color.White)
                     }
                 }
             }
