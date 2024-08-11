@@ -1,18 +1,15 @@
 package com.example.finalproj.database
 
 
-import com.example.finalproj.database.models.Gender
 import com.example.finalproj.database.models.Meal
 import com.example.finalproj.database.models.User
 import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import java.util.Locale
 
 
 // DatabaseKeys Enum

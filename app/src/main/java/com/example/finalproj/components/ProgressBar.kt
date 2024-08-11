@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.finalproj.database.models.Goal
 import com.example.finalproj.ui.theme.Eat2FitTheme
-import com.example.finalproj.views.roundToHalf
+import com.example.finalproj.util.roundToHalf
 
 @Composable
 fun CircularDeterminateIndicator(

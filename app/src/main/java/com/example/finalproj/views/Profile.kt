@@ -400,8 +400,9 @@ fun Notification_Section(
 ) {
     val context = LocalContext.current
     var notificationsEnabled by remember { mutableStateOf(false) }
-    var showPermissionRequester by remember { mutableStateOf(false) }
+    var showPermissionRequester = remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+
 
     LaunchedEffect(Unit) {
         notificationsEnabled = ContextCompat.checkSelfPermission(
@@ -410,13 +411,17 @@ fun Notification_Section(
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    if (showPermissionRequester) {
+
+
+
+    if (showPermissionRequester.value) {
         PermissionRequester(
             permission = Manifest.permission.POST_NOTIFICATIONS,
-            rationale = stringResource(R.string.notifications_popup)
+            rationale = stringResource(R.string.notifications_popup),
+            permissionRequester = showPermissionRequester
         ) { isGranted ->
             notificationsEnabled = isGranted
-            showPermissionRequester = false
+            showPermissionRequester.value = false
         }
     }
 
@@ -460,7 +465,8 @@ fun Notification_Section(
                     checked = notificationsEnabled,
                     onCheckedChange = { isChecked ->
                         if (isChecked) {
-                            showPermissionRequester = true
+                                showPermissionRequester.value = true
+
                         } else {
                             coroutineScope.launch {
                                 val intent =

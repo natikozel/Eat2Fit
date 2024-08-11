@@ -134,7 +134,7 @@
     <string name="wrong_answer">Wrong Answer</string>
     <string name="play_again">Play Again</string>
     <string name="try_again">Try Again</string>
-    <string name="quiz_description">The QUIZ IS BASED ON THE INFORMATION PAGES ON THIS APP.\n\nLET'S SEE HOW WELL YOU CAN REMEMBER WHAT YOU JUST READ</string>
+    <string name="quiz_description">The QUIZ IS BASED ON THE INFORMATION PAGES ON THIS APP.\n LET\'S SEE HOW WELL YOU CAN REMEMBER WHAT YOU JUST READ</string>
     <string name="time_10_sec">Time\n10 sec.</string>
 
 

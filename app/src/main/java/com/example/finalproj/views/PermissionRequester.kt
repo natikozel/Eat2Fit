@@ -12,12 +12,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import com.example.finalproj.R
+import com.example.finalproj.components.Eat2FitButton
 
 @Composable
 fun PermissionRequester(
     permission: String,
     rationale: String,
-    onPermissionResult: (Boolean) -> Unit
+    permissionRequester: MutableState<Boolean>,
+    onPermissionResult: (Boolean) -> Unit,
 ) {
     val context = LocalContext.current
     var showRationale by remember { mutableStateOf(false) }
@@ -48,7 +50,7 @@ fun PermissionRequester(
             title = { Text(text = stringResource(R.string.permission_required)) },
             text = { Text(rationale) },
             confirmButton = {
-                Button(onClick = {
+                Eat2FitButton(onClick = {
                     showRationale = false
                     launcher.launch(permission)
                 }) {
@@ -56,7 +58,10 @@ fun PermissionRequester(
                 }
             },
             dismissButton = {
-                Button(onClick = { showRationale = false }) {
+                Eat2FitButton(onClick = {
+                    showRationale = false
+                    permissionRequester.value = false
+                }) {
                     Text(stringResource(R.string.cancel))
                 }
             }

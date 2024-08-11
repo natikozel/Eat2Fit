@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import com.example.finalproj.database.DatabaseManager
+import com.example.finalproj.database.MyFirebaseMessagingService
 import com.example.finalproj.ui.theme.Eat2FitTheme
 import com.example.finalproj.util.DayCheckUtil
 import com.example.finalproj.views.Navigation
@@ -24,16 +25,17 @@ class Eat2FitApp : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DatabaseManager.initDb()
+
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
-                Log.w(TAG, getString(R.string.FCM_FAIL), task.exception)
+                Log.w(getString(R.string.Log_TAG), getString(R.string.FCM_FAIL), task.exception)
                 return@OnCompleteListener
             }
             val token = task.result
             Log.d(getString(R.string.Log_TAG), token)
         })
-        setContent { Eat2Fit() }
 
+        setContent { Eat2Fit() }
         lifecycleScope.launch {
             //DayCheckUtil.simulateDayPass(this@Eat2FitApp)
 

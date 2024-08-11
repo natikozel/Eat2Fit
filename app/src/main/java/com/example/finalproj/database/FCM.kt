@@ -13,14 +13,18 @@ import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
 import com.example.finalproj.Eat2FitApp
 import com.example.finalproj.R
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Log.d(TAG, "From: ${remoteMessage.from}")
+        Log.d(getString(R.string.Log_TAG), "From: ${remoteMessage.from}")
         if (remoteMessage.data.isNotEmpty()) {
-            Log.d(TAG, "Message data payload: ${remoteMessage.data}")
+            Log.d(getString(R.string.Log_TAG), "Message data payload: ${remoteMessage.data}")
             if (needsToBeScheduled()) {
                 // pass
             } else {
@@ -29,7 +33,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
 
         remoteMessage.notification?.let {
-            Log.d(TAG, "Message Notification Body: ${it.body}")
+            Log.d(getString(R.string.Log_TAG), "Message Notification Body: ${it.body}")
         }
         if (remoteMessage.getNotification() != null) {
             showNotification(
@@ -87,21 +91,25 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     private fun needsToBeScheduled() = true
 
     override fun onNewToken(token: String) {
-        Log.d(TAG, "Refreshed token: $token")
+        Log.d(getString(R.string.Log_TAG), "Refreshed token: $token")
         sendRegistrationToServer(token)
     }
 
     private fun handleNow() {
-        Log.d(TAG, "Short lived task is done.")
+        Log.d(getString(R.string.Log_TAG), "Short lived task is done.")
     }
 
     private fun sendRegistrationToServer(token: String?) {
-        // TODO: Implement this method to send token to a stand-alone server.
-        Log.d(TAG, "sendRegistrationTokenToServer($token)")
+        val deviceToken = hashMapOf(
+            "token" to token,
+            "timestamp" to FieldValue.serverTimestamp(),
+        )
+        AuthenticationManager.getCurrentUser()?.uid?.let {
+            Firebase.firestore.collection("fcmTokens").document(it)
+                .set(deviceToken)
+        }
+        Log.d(getString(R.string.Log_TAG), "sendRegistrationTokenToServer($token)")
     }
 
-    companion object {
-        private const val TAG = "MyFirebaseMsgService"
-    }
 
 }

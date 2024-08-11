@@ -40,6 +40,7 @@ import com.example.finalproj.database.models.FoodDetails
 import com.example.finalproj.R
 import com.example.finalproj.components.LoadingComposable
 import com.example.finalproj.util.navigateToProfile
+import java.util.Locale
 
 @Composable
 fun BarcodeScanResultScreen(
@@ -102,19 +103,29 @@ fun FoodDetails(foodDetails: FoodDetails) {
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
         )
-        AsyncImage(
-            model = ImageRequest.Builder(context)
-                .data(foodDetails.image_url)
-                .crossfade(true)
-                .build(),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(200.dp)
-                .clip(RoundedCornerShape(8.dp))
-        )
+        foodDetails.image_url.let {
+            if (it.isEmpty() || it == "") {
+                Text("No image available for this item")
+            } else {
+                AsyncImage(
+                    model = ImageRequest.Builder(context)
+                        .data(foodDetails.image_url)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(200.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            }
+        }
         Text(
-            text = "Calories: ${foodDetails.energy.let { it.ifEmpty { "0" } }}",
+            text = "Calories per 100g: ${
+                foodDetails.energy.let {
+                    if (it.isEmpty()) "0" else String.format(Locale.getDefault(), "%.2f", it.toFloat())
+                }
+            }",
             fontSize = 18.sp,
         )
 

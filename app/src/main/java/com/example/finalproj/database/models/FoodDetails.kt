@@ -44,7 +44,7 @@ class FoodViewModel : ViewModel() {
                                 product_name = product.get("product_name")?.asString ?: "Unknown",
                                 ingredients_text = product.get("ingredients_text")?.asString ?: "Unknown",
                                 image_url = product.get("image_url")?.asString ?: "",
-                                energy = product.get("energy")?.asString ?: ""
+                                energy = product.get("nutriments")?.asJsonObject?.get("energy-kcal_100g")?.asString ?: ""
                             )
                             _foodDetails.value = foodDetails
                         }
