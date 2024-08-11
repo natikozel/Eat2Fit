@@ -45,7 +45,7 @@ import com.example.finalproj.components.Email
 import com.example.finalproj.components.Password
 import com.example.finalproj.database.AuthenticationManager
 import com.example.finalproj.database.DatabaseManager
-import com.example.finalproj.database.models.User
+import com.example.finalproj.models.User
 import com.example.finalproj.ui.theme.Eat2FitTheme
 import com.example.finalproj.util.Destinations
 import com.example.finalproj.util.validation.EmailState

@@ -45,7 +45,7 @@ import com.example.finalproj.components.Eat2FitScaffold
 import com.example.finalproj.components.Eat2FitSurface
 import com.example.finalproj.components.HeaderLogo
 import com.example.finalproj.components.NavigateBackArrow
-import com.example.finalproj.database.models.QuizQuestions
+import com.example.finalproj.models.QuizQuestions
 import com.example.finalproj.ui.theme.Eat2FitTheme
 import com.example.finalproj.util.icons.rememberTimer
 import com.example.finalproj.util.navigateToHome

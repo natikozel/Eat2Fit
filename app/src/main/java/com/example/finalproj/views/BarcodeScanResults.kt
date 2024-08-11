@@ -20,7 +20,7 @@ import com.example.finalproj.components.Eat2FitScaffold
 import com.example.finalproj.components.Eat2FitSurface
 import com.example.finalproj.components.HeaderLogo
 import com.example.finalproj.components.NavigateBackArrow
-import com.example.finalproj.database.models.FoodViewModel
+import com.example.finalproj.models.FoodViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,7 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.finalproj.database.models.FoodDetails
+import com.example.finalproj.models.FoodDetails
 import com.example.finalproj.R
 import com.example.finalproj.components.LoadingComposable
 import com.example.finalproj.util.navigateToProfile

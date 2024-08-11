@@ -1,8 +1,8 @@
 package com.example.finalproj.database
 
 
-import com.example.finalproj.database.models.Meal
-import com.example.finalproj.database.models.User
+import com.example.finalproj.models.Meal
+import com.example.finalproj.models.User
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database

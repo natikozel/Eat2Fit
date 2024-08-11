@@ -1,6 +1,5 @@
 package com.example.finalproj
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -11,7 +10,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import com.example.finalproj.database.DatabaseManager
-import com.example.finalproj.database.MyFirebaseMessagingService
 import com.example.finalproj.ui.theme.Eat2FitTheme
 import com.example.finalproj.util.DayCheckUtil
 import com.example.finalproj.views.Navigation

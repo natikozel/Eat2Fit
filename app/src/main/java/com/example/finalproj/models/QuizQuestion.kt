@@ -1,4 +1,4 @@
-package com.example.finalproj.database.models
+package com.example.finalproj.models
 
 object QuizQuestions {
     val questions = listOf(

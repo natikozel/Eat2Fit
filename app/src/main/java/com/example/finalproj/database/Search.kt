@@ -1,10 +1,10 @@
 package com.example.finalproj.database
 
 import android.util.Log
-import com.example.finalproj.database.models.ImageType
-import com.example.finalproj.database.models.Ingredient
-import com.example.finalproj.database.models.Meal
-import com.example.finalproj.database.models.Recipe
+import com.example.finalproj.models.ImageType
+import com.example.finalproj.models.Ingredient
+import com.example.finalproj.models.Meal
+import com.example.finalproj.models.Recipe
 import com.example.finalproj.util.calculateCalories
 import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers

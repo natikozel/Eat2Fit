@@ -1,4 +1,4 @@
-package com.example.finalproj.database.models
+package com.example.finalproj.models
 
 data class Meal(
     val recipeUri: String? = null,

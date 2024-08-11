@@ -37,7 +37,7 @@ import com.example.finalproj.components.NavigateBackArrow
 import com.example.finalproj.components.Password
 import com.example.finalproj.database.AuthenticationManager
 import com.example.finalproj.database.DatabaseManager
-import com.example.finalproj.database.models.User
+import com.example.finalproj.models.User
 import com.example.finalproj.util.validation.ConfirmPasswordState
 import com.example.finalproj.util.validation.EmailState
 import com.example.finalproj.util.validation.PasswordState
@@ -171,9 +171,11 @@ private fun Context.submitRequest(
         email = email,
         password = password,
         onSuccess = {
-            DatabaseManager.updateUser(User(
+            DatabaseManager.updateUser(
+                User(
                 fullName = fullName
-            ))
+            )
+            )
 
             Toast.makeText(this, getString(R.string.successfully_signed_up), Toast.LENGTH_SHORT).show()
             popBack()

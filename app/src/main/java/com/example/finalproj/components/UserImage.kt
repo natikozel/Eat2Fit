@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.example.finalproj.database.DatabaseKeys
 import com.example.finalproj.database.DatabaseManager
 import com.example.finalproj.database.StorageManager
-import com.example.finalproj.database.models.User
+import com.example.finalproj.models.User
 
 
 @Composable

@@ -39,8 +39,8 @@ import com.example.finalproj.components.Eat2FitScaffold
 import com.example.finalproj.components.Eat2FitSurface
 import com.example.finalproj.components.MealImage
 import com.example.finalproj.components.SearchBar
-import com.example.finalproj.database.models.ImageType
-import com.example.finalproj.database.models.Recipe
+import com.example.finalproj.models.ImageType
+import com.example.finalproj.models.Recipe
 import com.example.finalproj.database.SearchAPI
 import com.example.finalproj.ui.theme.Eat2FitTheme
 import kotlinx.coroutines.delay
@@ -82,7 +82,7 @@ class SearchState(
         get() = when {
             !focused && query.text.isEmpty() -> SearchDisplay.Meals
             focused && query.text.isEmpty() -> SearchDisplay.Suggestions
-            searchResults.isEmpty() -> SearchDisplay.NoResults
+            focused && query.text.isNotEmpty() && searchResults.isEmpty() -> SearchDisplay.NoResults
             else -> SearchDisplay.Results
         }
 }
@@ -121,7 +121,7 @@ fun Search(
 
                 LaunchedEffect(state.query.text) {
                     state.searching = true
-                    delay(100)
+                    delay(300)
                     if (state.query.text.isNotEmpty()) {
                         state.searchResults = SearchAPI.getRecipes(state.query.text, 0, 1000)
                     }

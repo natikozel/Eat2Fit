@@ -28,7 +28,7 @@ import com.example.finalproj.components.Eat2FitSurface
 import com.example.finalproj.components.HeaderLogo
 import com.example.finalproj.database.AuthenticationManager
 import com.example.finalproj.database.DatabaseManager
-import com.example.finalproj.database.models.Meal
+import com.example.finalproj.models.Meal
 import com.example.finalproj.ui.theme.Eat2FitTheme
 import com.example.finalproj.util.fetchRecentMeal
 import com.example.finalproj.util.loadImageWithRetry

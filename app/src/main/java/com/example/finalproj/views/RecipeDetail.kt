@@ -35,10 +35,10 @@ import com.example.finalproj.components.Eat2FitScaffold
 import com.example.finalproj.components.HeaderLogo
 import com.example.finalproj.components.NavigateBackArrow
 import com.example.finalproj.database.DatabaseManager
-import com.example.finalproj.database.models.ImageType
-import com.example.finalproj.database.models.Recipe
+import com.example.finalproj.models.ImageType
+import com.example.finalproj.models.Recipe
 import com.example.finalproj.database.SearchAPI
-import com.example.finalproj.database.models.Meal
+import com.example.finalproj.models.Meal
 import com.example.finalproj.ui.theme.Eat2FitTheme
 import com.example.finalproj.util.roundToHalf
 import kotlinx.coroutines.delay

@@ -1,6 +1,6 @@
 package com.example.finalproj.database
 
-import com.example.finalproj.database.models.User
+import com.example.finalproj.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth

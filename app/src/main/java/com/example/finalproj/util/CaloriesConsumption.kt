@@ -1,8 +1,8 @@
 package com.example.finalproj.util
 
 import com.example.finalproj.database.AuthenticationManager
-import com.example.finalproj.database.models.Gender
-import com.example.finalproj.database.models.Goal
+import com.example.finalproj.models.Gender
+import com.example.finalproj.models.Goal
 
 
 /* FORMULA

@@ -40,8 +40,8 @@ import com.example.finalproj.components.Eat2FitSurface
 import com.example.finalproj.components.NavigateBackArrow
 import com.example.finalproj.database.AuthenticationManager
 import com.example.finalproj.database.DatabaseManager
-import com.example.finalproj.database.models.Goal
-import com.example.finalproj.database.models.User
+import com.example.finalproj.models.Goal
+import com.example.finalproj.models.User
 import com.example.finalproj.util.dailyCaloriesConsumption
 import com.example.finalproj.util.validation.DropDownState
 import com.example.finalproj.util.validation.TextStateString

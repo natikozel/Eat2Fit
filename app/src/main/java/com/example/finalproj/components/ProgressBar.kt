@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.finalproj.database.models.Goal
+import com.example.finalproj.models.Goal
 import com.example.finalproj.ui.theme.Eat2FitTheme
 import com.example.finalproj.util.roundToHalf
 

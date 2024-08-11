@@ -7,8 +7,8 @@ import coil.request.ImageRequest
 import com.example.finalproj.R
 import com.example.finalproj.database.DatabaseManager
 import com.example.finalproj.database.SearchAPI
-import com.example.finalproj.database.models.ImageType
-import com.example.finalproj.database.models.Meal
+import com.example.finalproj.models.ImageType
+import com.example.finalproj.models.Meal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
