@@ -9,11 +9,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
+import com.example.finalproj.database.AuthenticationManager
 import com.example.finalproj.database.DatabaseManager
 import com.example.finalproj.ui.theme.Eat2FitTheme
 import com.example.finalproj.util.DayCheckUtil
+import com.example.finalproj.util.FirstRunUtil
 import com.example.finalproj.views.Navigation
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
 
@@ -24,6 +27,15 @@ class Eat2FitApp : ComponentActivity() {
         super.onCreate(savedInstanceState)
         DatabaseManager.initDb()
 
+        if (FirstRunUtil.isFirstRun(this)) {
+            try {
+                FirebaseAuth.getInstance().signOut()
+            } catch (e: Exception) {
+                Log.e("Eat2FitApp", "Error signing out user", e)
+            }
+            FirstRunUtil.updateFirstRunFlag(this)
+        }
+
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.w(getString(R.string.Log_TAG), getString(R.string.FCM_FAIL), task.exception)
@@ -32,7 +44,6 @@ class Eat2FitApp : ComponentActivity() {
             val token = task.result
             Log.d(getString(R.string.Log_TAG), token)
         })
-
         setContent { Eat2Fit() }
         lifecycleScope.launch {
             //DayCheckUtil.simulateDayPass(this@Eat2FitApp)

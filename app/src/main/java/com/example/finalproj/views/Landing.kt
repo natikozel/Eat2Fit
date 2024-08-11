@@ -2,6 +2,7 @@ package com.example.finalproj.views
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
@@ -76,13 +77,21 @@ fun NavGraphBuilder.addLandingGraph(
         CheckIfUserIsLoggedIn(
             onSuccess = {
                 DatabaseManager.readUser().addOnSuccessListener { dataSnapshot ->
-                    AuthenticationManager.setUser(dataSnapshot.getValue(User::class.java)!!)
-                    if (AuthenticationManager.getUser().hasLoggedInOnce!!) {
-                        DatabaseManager.attachUserListener()
-                        navigateAndClear(Destinations.PROFILE)
+                    val user = dataSnapshot.getValue(User::class.java)
+                    if (user != null) {
+                        AuthenticationManager.setUser(user)
+                        if (user.hasLoggedInOnce == true) {
+                            DatabaseManager.attachUserListener()
+                            navigateAndClear(Destinations.PROFILE)
+                        } else {
+                            onNavigateToRoute(Destinations.WELCOME)
+                        }
                     } else {
-                        onNavigateToRoute(Destinations.WELCOME)
+                        Log.e("CheckIfUserIsLoggedIn", "User data is null")
                     }
+                }.addOnFailureListener { exception ->
+                    Log.e("CheckIfUserIsLoggedIn", "Failed to read user data", exception)
+                    onNavigateToRoute(Destinations.WELCOME)
                 }
             },
             onFailure = {
@@ -180,7 +189,7 @@ private fun CheckIfUserIsLoggedIn(
     onSuccess: () -> Unit,
     onFailure: @Composable () -> Unit,
 ) {
-    val currentUser = Firebase.auth.currentUser
+    val currentUser = AuthenticationManager.getCurrentUser()
     if (currentUser != null) {
         onSuccess()
     } else {

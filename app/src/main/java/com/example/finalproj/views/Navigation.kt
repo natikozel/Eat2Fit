@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
@@ -47,7 +48,6 @@ private fun NavGraphBuilder.eat2FitNavGraph(
     onNavigateToRoute: (String) -> Unit,
     navigateAndClear: (String) -> Unit
 ) {
-
     navigation(
         route = LANDING,
         startDestination = LandingSections.MAIN.route

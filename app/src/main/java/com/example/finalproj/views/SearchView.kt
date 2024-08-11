@@ -76,14 +76,19 @@ class SearchState(
     var query by mutableStateOf(query)
     var focused by mutableStateOf(focused)
     var searching by mutableStateOf(searching)
-
+    var isDoneFetching by mutableStateOf(false)
     var searchResults by mutableStateOf(searchResults)
     val searchDisplay: SearchDisplay
-        get() = when {
-            !focused && query.text.isEmpty() -> SearchDisplay.Meals
-            focused && query.text.isEmpty() -> SearchDisplay.Suggestions
-            focused && query.text.isNotEmpty() && searchResults.isEmpty() -> SearchDisplay.NoResults
-            else -> SearchDisplay.Results
+        get() = if (!focused && query.text.isEmpty()) {
+            SearchDisplay.Meals
+        } else if (focused && query.text.isEmpty()) {
+            SearchDisplay.Suggestions
+        } else if (focused && query.text.isNotEmpty() && searchResults.isEmpty() && isDoneFetching) {
+            SearchDisplay.NoResults
+        } else if (focused && query.text.isNotEmpty() && searchResults.isNotEmpty() && isDoneFetching) {
+            SearchDisplay.Results
+        } else {
+            SearchDisplay.Meals
         }
 }
 
@@ -124,6 +129,7 @@ fun Search(
                     delay(300)
                     if (state.query.text.isNotEmpty()) {
                         state.searchResults = SearchAPI.getRecipes(state.query.text, 0, 1000)
+                        state.isDoneFetching = true
                     }
 
                     state.searching = false
