@@ -2,6 +2,15 @@
 
 **Eat2Fit** is a sophisticated mobile application crafted to support users on their dietary and wellness journeys. Designed with modern Android development practices, Eat2Fit offers an intuitive and engaging user experience, empowering individuals to manage their nutrition with ease.
 
+
+## Video Overview
+
+[Watch the video](https://drive.google.com/file/d/1rCIKdFQm2WA9ihsclqYGvk4-zxCCX_OU/view?usp=sharing) to see a detailed walkthrough of Eat2Fit’s features and how it can help you manage your dietary goals:
+[<img src="https://i.ibb.co/rwJsH2R/Testmythumbnail-Image.png" alt="Watch the video" width="500"/>]([https://youtu.be/vt5fpE0bzSY](https://drive.google.com/file/d/1rCIKdFQm2WA9ihsclqYGvk4-zxCCX_OU/view?usp=sharing))
+
+
+
+
 ## Key Features
 
 - **Secure User Authentication**: Reliable sign-up and login processes ensure user data security.
