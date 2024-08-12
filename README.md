@@ -16,7 +16,7 @@
 
 - **Secure User Authentication**: Reliable sign-up and login processes ensure user data security.
 - **Smart Recipe Search**: Quickly discover recipes with dynamic real-time suggestions.
-- **Barcode Scanner**: Instantly retrieve product information with a simple scan.
+- **Barcode Scanner with Open World Facts API**: Instantly retrieve product information by scanning barcodes.
 - **Personalized Onboarding**: Tailored user experience based on initial preferences and dietary goals.
 - **Efficient Image Handling**: Fast and smooth image loading with Coil.
 - **Seamless Navigation**: Intuitive navigation components for effortless transitions between screens.
