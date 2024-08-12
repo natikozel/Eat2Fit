@@ -58,7 +58,7 @@ The project is organized for scalability and maintainability:
 
 1. Clone the repository:
  ```bash
-git clone https://github.com/yourusername/Eat2Fit.git
+git clone https://github.com/natikozel/Eat2Fit.git
 ```
 3. Open the project in Android Studio.
 4. Sync the project with Gradle.
