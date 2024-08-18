@@ -82,6 +82,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.core.ktx)
+    implementation(libs.barcode.scanning.common)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

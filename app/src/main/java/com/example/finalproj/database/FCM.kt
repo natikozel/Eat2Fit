@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -42,6 +43,25 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             )
         }
 
+    }
+
+
+    fun forceTokenRefresh() {
+        FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                FirebaseMessaging.getInstance().token.addOnCompleteListener { newTokenTask ->
+                    if (newTokenTask.isSuccessful) {
+                        val newToken = newTokenTask.result
+                        Log.d("TokenManager", "New FCM Token: $newToken")
+                        // Send the new token to your backend
+                    } else {
+                        Log.e("TokenManager", "Failed to get new FCM token", newTokenTask.exception)
+                    }
+                }
+            } else {
+                Log.e("TokenManager", "Failed to delete FCM token", task.exception)
+            }
+        }
     }
 
     private fun showNotification(

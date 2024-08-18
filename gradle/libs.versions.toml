@@ -23,6 +23,7 @@ lifecycleRuntimeComposeAndroid = "2.8.4"
 gson = "2.11.0"
 firebaseFirestoreKtx = "25.0.0"
 coreKtxVersion = "1.6.1"
+barcodeScanningCommon = "17.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,7 +47,6 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
-androidx-material3-navigation = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite" }
 androidx-media3-exoplayer = { group = "com.google.android.exoplayer", name = "exoplayer", version.ref = "exoPlayer" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation" }
@@ -60,6 +60,7 @@ gpsCoroutines = {module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-service
 androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "lifecycleRuntimeComposeAndroid" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtxVersion" }
+barcode-scanning-common = { group = "com.google.mlkit", name = "barcode-scanning-common", version.ref = "barcodeScanningCommon" }
 
 
 [plugins]

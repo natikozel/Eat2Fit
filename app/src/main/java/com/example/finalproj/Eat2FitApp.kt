@@ -35,7 +35,6 @@ class Eat2FitApp : ComponentActivity() {
             }
             FirstRunUtil.updateFirstRunFlag(this)
         }
-
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.w(getString(R.string.Log_TAG), getString(R.string.FCM_FAIL), task.exception)

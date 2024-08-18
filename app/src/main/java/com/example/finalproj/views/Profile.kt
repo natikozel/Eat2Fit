@@ -155,6 +155,7 @@ fun NavGraphBuilder.addAppGraph(
             DatabaseManager.readUser().addOnSuccessListener { dataSnapshot ->
                 val data = dataSnapshot.getValue(User::class.java)
                 AuthenticationManager.setUser(data!!)
+                DatabaseManager.attachUserListener()
                 isLoading.value = false
             }
         }

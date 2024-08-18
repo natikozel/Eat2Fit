@@ -53,16 +53,17 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
-        <meta-data
-            android:name="com.google.mlkit.version.DEPENDENCIES"
-            android:value="barcode.ui"/>
+<!--        <meta-data-->
+<!--            android:name="com.google.mlkit.version.DEPENDENCIES"-->
+<!--            android:value="barcode.ui"/>-->
 
 
         <activity
             android:name=".Eat2FitApp"
             android:exported="true"
             android:theme="@style/Theme.FinalProj"
-            android:windowSoftInputMode="adjustResize|stateVisible">
+            android:windowSoftInputMode="adjustResize|stateVisible"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

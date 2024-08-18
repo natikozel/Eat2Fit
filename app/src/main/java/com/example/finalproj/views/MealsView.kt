@@ -39,8 +39,7 @@ import kotlinx.coroutines.launch
 fun MealsView(
     onNavigateToRoute: (String) -> Unit,
 ) {
-    var meals =
-        AuthenticationManager.getUser().previousMeals
+    var meals = AuthenticationManager.getUser().previousMeals
     val coroutineScope = rememberCoroutineScope()
     var showPopup by remember { mutableStateOf(false) }
 
@@ -225,6 +224,7 @@ fun MealCard(meal: Meal, index: String, onDelete: () -> Unit) {
         }
     }
 }
+
 @Composable
 fun MealRemovePopup(onDismiss: () -> Unit, onNavigateToRoute: (String) -> Unit) {
     AlertDialog(
