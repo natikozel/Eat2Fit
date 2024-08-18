@@ -2,11 +2,21 @@
 
 **Eat2Fit** is a sophisticated mobile application crafted to support users on their dietary and wellness journeys. Designed with modern Android development practices, Eat2Fit offers an intuitive and engaging user experience, empowering individuals to manage their nutrition with ease.
 
+
+## Video Overview
+
+[Watch the video](https://drive.google.com/file/d/1rCIKdFQm2WA9ihsclqYGvk4-zxCCX_OU/view?usp=sharing) to see a detailed walkthrough of Eat2Fit’s features and how it can help you manage your dietary goals:
+
+[<img src="https://i.ibb.co/rwJsH2R/Testmythumbnail-Image.png" alt="Watch the video" width="500"/>](https://drive.google.com/drive/u/4/folders/16iCHnWvatyYMB_6uq44jME9K250U2mN2)
+
+
+
+
 ## Key Features
 
 - **Secure User Authentication**: Reliable sign-up and login processes ensure user data security.
 - **Smart Recipe Search**: Quickly discover recipes with dynamic real-time suggestions.
-- **Barcode Scanner**: Instantly retrieve product information with a simple scan.
+- **Barcode Scanner with the Open Food Facts API**: Instantly retrieve product information by scanning barcodes.
 - **Personalized Onboarding**: Tailored user experience based on initial preferences and dietary goals.
 - **Efficient Image Handling**: Fast and smooth image loading with Coil.
 - **Seamless Navigation**: Intuitive navigation components for effortless transitions between screens.
@@ -48,7 +58,7 @@ The project is organized for scalability and maintainability:
 
 1. Clone the repository:
  ```bash
-git clone https://github.com/yourusername/Eat2Fit.git
+git clone https://github.com/natikozel/Eat2Fit.git
 ```
 3. Open the project in Android Studio.
 4. Sync the project with Gradle.
