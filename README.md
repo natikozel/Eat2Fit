@@ -7,7 +7,7 @@
 
 [Watch the video](https://drive.google.com/drive/u/4/folders/16iCHnWvatyYMB_6uq44jME9K250U2mN2) to see a detailed walkthrough of Eat2Fit’s features and how it can help you manage your dietary goals:
 
-[<img src="https://i.ibb.co/rwJsH2R/Testmythumbnail-Image.png" alt="Watch the video" width="500"/>](https://drive.google.com/drive/u/4/folders/16iCHnWvatyYMB_6uq44jME9K250U2mN2)
+[<img src="https://i.ibb.co/94Jpx5L/1723641719621.jpg" alt="Watch the video" width="500"/>](https://drive.google.com/drive/u/4/folders/16iCHnWvatyYMB_6uq44jME9K250U2mN2)
 
 
 
